@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="org.lejos.ev3.example" default="upload">
+<project name="lejosserver" default="upload">
     <property file="build.properties" />
 
     <path id="libraries.path">    
         <fileset dir="${ev3.home}/lib">
-            <include name="*.jar"/>
-        </fileset>
-        <fileset dir="./">
             <include name="*.jar"/>
         </fileset>
     </path>
@@ -15,7 +12,7 @@
         <delete dir="${build.dir}"/>
     </target>
 
-	<target name="compile" depends="clean" description="compile the source ">
+	<target name="compile" depends="clean" description="compile the source">
 		<!-- Compile the java code from ${source.dir} to ${classes.dir}  -->
 		<mkdir dir="${classes.dir}" />
 		

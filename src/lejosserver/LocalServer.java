@@ -39,14 +39,16 @@ public class LocalServer {
 			}
 			String cmd = (String) contents.get("cmd");
 
-			if (cmd.equals(new String("beep"))) {
+			if (cmd.equals(new String("init"))) {
+				
+			} else if (cmd.equals(new String("beep"))) {
 				Sound.beep();
 			} else if (cmd.equals(new String("buzz"))) {
 				Sound.buzz();
 			} else if (cmd.equals(new String("motor"))) {
 				String which = (String) contents.get("which");
 				long degrees = (long) contents.get("degrees");
-				(new Thread(new MotorAction(which, degrees))).start();
+				(new Thread(new EV3LargeMotorAction(which, degrees))).start();
 			} else if (cmd.equals(new String("exit"))) {
 				break;
 			} else {

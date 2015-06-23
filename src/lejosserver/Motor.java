@@ -1,5 +1,8 @@
 package lejosserver;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
@@ -10,6 +13,8 @@ public class Motor {
 	
 	private Port port;
 	private RegulatedMotor m;
+	private MotorThread motorThread;
+	public BlockingQueue<String> actionQueue = new ArrayBlockingQueue<String>(1);
 
 	public Motor(String which) {
 		Port port = null;
@@ -21,6 +26,12 @@ public class Motor {
 		}
 		this.port = port;
 		this.m = new EV3LargeRegulatedMotor(this.port);
+	}
+	
+	public void init() {
+		motorThread = new MotorThread();
+		motorThread.setDaemon(true);
+		motorThread.start();
 	}
 	
 	public void executeCmd(String cmd) {
@@ -61,5 +72,19 @@ public class Motor {
 
 	public float getMaxSpeed() {
 		return this.m.getMaxSpeed();
+	}
+	
+	private class MotorThread extends Thread {
+		@Override
+		public void run() {
+			while(true) {
+				try {
+					String cmd = actionQueue.take();
+					executeCmd(cmd);
+				} catch (InterruptedException e) {
+					// exit if interrupted
+				}
+			}
+		}
 	}
 }

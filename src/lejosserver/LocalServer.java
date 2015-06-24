@@ -59,9 +59,11 @@ public class LocalServer {
 			} else if (cmd.dev == DevType.MOTOR) {
 				int i = cmd.portIndex;
 				if (cmd.cmd == CmdType.INIT) {
-					//TODO do not allow replacing
-					motors[i] = new Motor(cmd.port);
-					motors[i].init();
+					// ignore repeated inits
+					if (motors[i] == null) {
+						motors[i] = new Motor(cmd.port);
+						motors[i].init();
+					}
 				} else if (cmd.cmd == CmdType.GETSPEED) {
 					pw.println(motors[i].getSpeed());
 			        pw.flush();
@@ -73,8 +75,10 @@ public class LocalServer {
 			} else if (cmd.dev == DevType.SENSOR) {
 				int i = cmd.portIndex;
 				if (cmd.cmd == CmdType.INIT) {
-					//TODO do not allow replacing
-					sensors[i] = new Sensor(cmd.port);
+					// ignore repeated inits
+					if (sensors[i] == null) {
+						sensors[i] = new Sensor(cmd.port);
+					}
 				} else if (cmd.cmd == CmdType.GETDISTANCE) {
 					pw.println(sensors[i].getDistance());
 					pw.flush();

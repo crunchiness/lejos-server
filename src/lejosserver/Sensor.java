@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import lejos.hardware.port.Port;
@@ -24,14 +23,12 @@ public class Sensor {
 	
 	@SuppressWarnings("unchecked")
 	public String getDistance() throws IOException {
-		float[] sample = new float[10];
+		float[] sample = new float[1];
 		distanceMode.fetchSample(sample, 0);
 		
-		JSONArray valueList = new JSONArray();
-		valueList.addAll(toList(sample));
-		
 		JSONObject outputObj = new JSONObject();
-		outputObj.put("distance", valueList);
+		
+		outputObj.put("distance", sample[0]);
 		outputObj.put("dev", "sensor");
 		outputObj.put("port", port.toString()); //TODO fix
 		StringWriter out = new StringWriter();
@@ -41,12 +38,4 @@ public class Sensor {
 		return LocalServer.padString(jsonOutput);
 	}
 	
-	private static List<Float> toList(float[] array) {
-       int size = array.length;
-       List<Float> list = new ArrayList<Float>(size);
-       for(int i = 0; i < size; i++) {
-          list.add(array[i]);
-       }
-       return list;
-	}
 }

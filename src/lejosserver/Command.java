@@ -33,35 +33,38 @@ public class Command {
 			// TODO
 		}
 
-		String port = (String) command.get("port");
-		if (port.equals(new String("A"))) {
-			this.port = MotorPort.A;
-			this.portIndex = 0;
-		} else if (port.equals(new String("B"))) {
-			this.port = MotorPort.B;
-			this.portIndex = 1;
-		} else if (port.equals(new String("C"))) {
-			this.port = MotorPort.C;
-			this.portIndex = 2;
-		} else if (port.equals(new String("D"))) {
-			this.port = MotorPort.D;
-			this.portIndex = 3;
-		} else if (port.equals(new String("S1"))) {
-			this.port = SensorPort.S1;
-			this.portIndex = 0;
-		} else if (port.equals(new String("S2"))) {
-			this.port = SensorPort.S2;
-			this.portIndex = 1;
-		} else if (port.equals(new String("S3"))) {
-			this.port = SensorPort.S3;
-			this.portIndex = 2;
-		} else if (port.equals(new String("S4"))) {
-			this.port = SensorPort.S4;
-			this.portIndex = 3;
-		} else {
-			//TODO
+		Object port = command.get("port");
+		if (port != null) {
+			portName = (String) port;
+			if (port.equals(new String("A"))) {
+				this.port = MotorPort.A;
+				this.portIndex = 0;
+			} else if (port.equals(new String("B"))) {
+				this.port = MotorPort.B;
+				this.portIndex = 1;
+			} else if (port.equals(new String("C"))) {
+				this.port = MotorPort.C;
+				this.portIndex = 2;
+			} else if (port.equals(new String("D"))) {
+				this.port = MotorPort.D;
+				this.portIndex = 3;
+			} else if (port.equals(new String("S1"))) {
+				this.port = SensorPort.S1;
+				this.portIndex = 0;
+			} else if (port.equals(new String("S2"))) {
+				this.port = SensorPort.S2;
+				this.portIndex = 1;
+			} else if (port.equals(new String("S3"))) {
+				this.port = SensorPort.S3;
+				this.portIndex = 2;
+			} else if (port.equals(new String("S4"))) {
+				this.port = SensorPort.S4;
+				this.portIndex = 3;
+			} else {
+				//TODO
+			}
 		}
-		portName = port;
+		
 		Object param = command.get("param");
 		if (param != null) {
 			this.param = (int) param;

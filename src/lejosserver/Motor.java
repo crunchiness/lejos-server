@@ -54,7 +54,7 @@ public class Motor {
 		JSONObject outputObj = new JSONObject();
 		outputObj.put("speed", new Integer(speed));
 		outputObj.put("dev", "motor");
-		outputObj.put("port", port.toString());
+		outputObj.put("port", port.toString()); //TODO fix
 		StringWriter out = new StringWriter();
 		outputObj.writeJSONString(out);
 		String jsonOutput = out.toString();

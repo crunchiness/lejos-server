@@ -34,7 +34,7 @@ public class LocalServer {
 					connectionSocket.getOutputStream());
 			PrintWriter pw = new PrintWriter(outToClient);
 			
-			LCD.drawString("Received: " + clientSentence, 0, 4);
+			LCD.drawString(clientSentence, 0, 4);
 			
 			JSONObject inputObj = (JSONObject) JSONValue.parse(clientSentence);
 			JSONObject contents;
@@ -59,6 +59,7 @@ public class LocalServer {
 				int i = cmd.portIndex;
 				if (cmd.cmd == CmdType.INIT) {
 					motors[i] = new Motor(cmd.port);
+					motors[i].init();
 				} else if (cmd.cmd == CmdType.GETSPEED) {
 					pw.println(motors[i].getSpeed());
 			        pw.flush();

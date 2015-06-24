@@ -15,8 +15,8 @@ public class LocalServer {
 	
 	// Motor ports: A, B, C, D
 	private static Motor[] motors = {null, null, null, null};
-	// Sensor ports: 1, 2, 3, 4
-	//private Sensor[] sensors = {null, null, null, null};
+	// Sensor ports: S1, S2, S3, S4
+	private static Sensor[] sensors = {null, null, null, null};
 	
 	public LocalServer() {}
 	
@@ -54,10 +54,12 @@ public class LocalServer {
 					case EXIT: terminate = true;break;
 					default: LCD.drawString("Unknown cmd: " + cmd.cmdName, 0, 4);
 				}
+
 			// Motor commands
 			} else if (cmd.dev == DevType.MOTOR) {
 				int i = cmd.portIndex;
 				if (cmd.cmd == CmdType.INIT) {
+					//TODO do not allow replacing
 					motors[i] = new Motor(cmd.port);
 					motors[i].init();
 				} else if (cmd.cmd == CmdType.GETSPEED) {
@@ -67,6 +69,17 @@ public class LocalServer {
 					motors[i].actionQueue.add(cmd);
 				}
 
+			// Sensor commands
+			} else if (cmd.dev == DevType.SENSOR) {
+				int i = cmd.portIndex;
+				if (cmd.cmd == CmdType.INIT) {
+					//TODO do not allow replacing
+					sensors[i] = new Sensor(cmd.port);
+				} else if (cmd.cmd == CmdType.GETDISTANCE) {
+					pw.println(sensors[i].getDistance());
+					pw.flush();
+				}
+				
 			// Unsupported device
 			} else {
 				//TODO

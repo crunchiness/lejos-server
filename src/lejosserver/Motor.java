@@ -21,7 +21,7 @@ public class Motor {
 
 	public Motor(Port port) {
 		this.port = port;
-		this.m = new EV3LargeRegulatedMotor(this.port);
+		this.m = new EV3LargeRegulatedMotor(port); //TODO add support for small motor
 	}
 	
 	public void init() {

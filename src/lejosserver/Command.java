@@ -8,11 +8,11 @@ import lejos.hardware.port.SensorPort;
 
 public class Command {
 	public enum CmdType {
-		INIT, BEEP, BUZZ, EXIT, FORWARD, BACKWARD, STOP, CLOSE, RESETTACHO, GETSPEED, SETSPEED
+		INIT, BEEP, BUZZ, EXIT, FORWARD, BACKWARD, STOP, CLOSE, RESETTACHO, GETSPEED, SETSPEED, GETDISTANCE
 	}
 
 	public enum DevType {
-		BRICK, MOTOR
+		BRICK, MOTOR, SENSOR
 	}
 
 	public DevType dev;
@@ -29,6 +29,8 @@ public class Command {
 			this.dev = DevType.MOTOR;
 		} else if (dev.equals(new String("brick"))) {
 			this.dev = DevType.BRICK;
+		} else if (dev.equals(new String("sensor"))) {
+			this.dev = DevType.SENSOR;
 		} else {
 			// TODO
 		}
@@ -93,6 +95,8 @@ public class Command {
 			this.cmd = CmdType.GETSPEED;
 		} else if (cmdName.equals(new String("setspeed"))) {
 			this.cmd = CmdType.SETSPEED;
+		} else if (cmdName.equals(new String("getdistance"))){
+			this.cmd = CmdType.GETDISTANCE;
 		} else {
 			// TODO
 		}

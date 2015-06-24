@@ -1,11 +1,14 @@
 package lejosserver;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import org.json.simple.JSONObject;
+
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
 import lejos.robotics.RegulatedMotor;
 
@@ -14,16 +17,9 @@ public class Motor {
 	private Port port;
 	private RegulatedMotor m;
 	private MotorThread motorThread;
-	public BlockingQueue<String> actionQueue = new ArrayBlockingQueue<String>(1);
+	public BlockingQueue<Command> actionQueue = new ArrayBlockingQueue<Command>(1);
 
-	public Motor(String which) {
-		Port port = null;
-		switch (which) {
-			case "A": port = MotorPort.A;break;
-			case "B": port = MotorPort.B;break;
-			case "C": port = MotorPort.C;break;
-			case "D": port = MotorPort.D;break;
-		}
+	public Motor(Port port) {
 		this.port = port;
 		this.m = new EV3LargeRegulatedMotor(this.port);
 	}
@@ -34,32 +30,35 @@ public class Motor {
 		motorThread.start();
 	}
 	
-	public void executeCmd(String cmd) {
-		if (cmd.equals(new String("forward"))) {
-			this.m.forward();
-		} else if (cmd.equals(new String("backward"))) {
-			this.m.backward();
-		} else if (cmd.equals(new String("stop"))) {
-			this.m.stop();
-		} else if (cmd.equals(new String("close"))) {
-			this.m.close();
+	public void executeAsyncCmd(Command cmd) {
+		switch(cmd.cmd) {
+			case FORWARD: this.m.forward();break;
+			case BACKWARD: this.m.backward();break;
+			case STOP: this.m.stop();break;
+			case RESETTACHO: this.m.resetTachoCount();break;
+			default: LCD.drawString("Unsupported motor cmd:" + cmd, 0, 4);
+		}
 //		} else if (cmd.equals(new String("gettacho"))) {
 //			this.m.getTachoCount();
-		} else if (cmd.equals(new String("resettacho"))) {
-			this.m.resetTachoCount();
 //		} else if (cmd.equals(new String("rotate"))) {
 //			this.m.rotate(angle);
-		} else {
-			LCD.drawString("Unsupported motor cmd:" + cmd, 0, 4);
-		}
 	}
 
 	public void setAcceleration(int acceleration) {
 		this.m.setAcceleration(acceleration);
 	}
 
-	public int getSpeed() {
-		return this.m.getSpeed();
+	@SuppressWarnings("unchecked")
+	public String getSpeed() throws IOException {
+		int speed = this.m.getSpeed();
+		JSONObject outputObj = new JSONObject();
+		outputObj.put("speed", new Integer(speed));
+		outputObj.put("dev", "motor");
+		outputObj.put("port", port.toString());
+		StringWriter out = new StringWriter();
+		outputObj.writeJSONString(out);
+		String jsonOutput = out.toString();
+		return LocalServer.padString(jsonOutput);
 	}
 
 	public void setSpeed(int speed) {
@@ -79,8 +78,8 @@ public class Motor {
 		public void run() {
 			while(true) {
 				try {
-					String cmd = actionQueue.take();
-					executeCmd(cmd);
+					Command cmd = actionQueue.take();
+					executeAsyncCmd(cmd);
 				} catch (InterruptedException e) {
 					// exit if interrupted
 				}

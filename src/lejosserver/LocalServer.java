@@ -77,11 +77,17 @@ public class LocalServer {
 				if (cmd.cmd == CmdType.INIT) {
 					// ignore repeated inits
 					if (sensors[i] == null) {
-						sensors[i] = new Sensor(cmd.port);
+						if (cmd.strParam.equals(new String("color"))) {
+							sensors[i] = new ColorSensor(cmd.port);
+						} else if (cmd.strParam.equals(new String("ir"))) {
+							sensors[i] = new IRSensor(cmd.port);
+						}
 					}
-				} else if (cmd.cmd == CmdType.GETDISTANCE) {
-					pw.println(sensors[i].getDistance());
+				} else if (cmd.cmd == CmdType.GETVALUE) {
+					pw.println(sensors[i].getValue());
 					pw.flush();
+				} else if (cmd.cmd == CmdType.SETMODE) {
+					sensors[i].setMode(cmd.strParam);
 				}
 				
 			// Unsupported device

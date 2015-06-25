@@ -8,7 +8,8 @@ import lejos.hardware.port.SensorPort;
 
 public class Command {
 	public enum CmdType {
-		INIT, BEEP, BUZZ, EXIT, FORWARD, BACKWARD, STOP, CLOSE, RESETTACHO, GETSPEED, SETSPEED, GETDISTANCE
+		INIT, BEEP, BUZZ, EXIT, FORWARD, BACKWARD, STOP, CLOSE, RESETTACHO, GETSPEED, SETSPEED,
+		GETVALUE, SETMODE
 	}
 
 	public enum DevType {
@@ -19,7 +20,8 @@ public class Command {
 	public CmdType cmd;
 	public String cmdName;
 	public String portName;
-	public int param;
+	public int intParam;
+	public String strParam;
 	public Port port;
 	public int portIndex;
 
@@ -63,42 +65,40 @@ public class Command {
 				this.port = SensorPort.S4;
 				this.portIndex = 3;
 			} else {
-				//TODO
+				// TODO
 			}
-		}
-		
-		Object param = command.get("param");
-		if (param != null) {
-			this.param = (int) param;
 		}
 
 		this.cmdName = (String) command.get("cmd");
-		if (cmdName.equals(new String("init"))) {
-			this.cmd = CmdType.INIT;
-		} else if (cmdName.equals(new String("beep"))) {
-			this.cmd = CmdType.BEEP;
-		} else if (cmdName.equals(new String("buzz"))) {
-			this.cmd = CmdType.BUZZ;
-		} else if (cmdName.equals(new String("exit"))) {
-			this.cmd = CmdType.EXIT;
-		} else if (cmdName.equals(new String("forward"))) {
-			this.cmd = CmdType.FORWARD;
-		} else if (cmdName.equals(new String("backward"))) {
-			this.cmd = CmdType.BACKWARD;
-		} else if (cmdName.equals(new String("stop"))) {
-			this.cmd = CmdType.STOP;
-		} else if (cmdName.equals(new String("close"))) {
-			this.cmd = CmdType.CLOSE;
-		} else if (cmdName.equals(new String("resettacho"))) {
-			this.cmd = CmdType.RESETTACHO;
-		} else if (cmdName.equals(new String("getspeed"))) {
-			this.cmd = CmdType.GETSPEED;
-		} else if (cmdName.equals(new String("setspeed"))) {
-			this.cmd = CmdType.SETSPEED;
-		} else if (cmdName.equals(new String("getdistance"))){
-			this.cmd = CmdType.GETDISTANCE;
-		} else {
+		if (cmdName.equals(new String("init"))) { this.cmd = CmdType.INIT; }
+		else if (cmdName.equals(new String("beep"))) { this.cmd = CmdType.BEEP; }
+		else if (cmdName.equals(new String("buzz"))) { this.cmd = CmdType.BUZZ; }
+		else if (cmdName.equals(new String("exit"))) { this.cmd = CmdType.EXIT; }
+		else if (cmdName.equals(new String("forward"))) { this.cmd = CmdType.FORWARD; }
+		else if (cmdName.equals(new String("backward"))) { this.cmd = CmdType.BACKWARD; }
+		else if (cmdName.equals(new String("stop"))) { this.cmd = CmdType.STOP; }
+		else if (cmdName.equals(new String("close"))) { this.cmd = CmdType.CLOSE; }
+		else if (cmdName.equals(new String("resettacho"))) { this.cmd = CmdType.RESETTACHO; }
+		else if (cmdName.equals(new String("getspeed"))) { this.cmd = CmdType.GETSPEED; }
+		else if (cmdName.equals(new String("setspeed"))) { this.cmd = CmdType.SETSPEED; }
+		else if (cmdName.equals(new String("getdistance"))) { this.cmd = CmdType.GETVALUE; }
+		else if (cmdName.equals(new String("setmode"))) { this.cmd = CmdType.SETMODE; }
+		else {
 			// TODO
+		}
+
+		if (this.cmd == CmdType.SETMODE) {
+			// TODO enum modes?
+			Object param = command.get("mode");
+			if (param != null) {
+				this.strParam = (String) param;
+			}
+		} else if (this.cmd == CmdType.INIT && this.dev == DevType.SENSOR) {
+			// TODO enum sensors?
+			Object param = command.get("type");
+			if (param != null) {
+				this.strParam = (String) param;
+			}
 		}
 	}
 }

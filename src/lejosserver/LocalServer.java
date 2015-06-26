@@ -94,11 +94,17 @@ public class LocalServer {
 					pw.flush();
 				} else if (cmd.cmd == CmdType.SETMODE) {
 					sensors[i].setMode(cmd.strParam);
+				} else if (cmd.cmd == CmdType.CLOSE) {
+					//TODO should not throw error if sensor wasn't initialized
+					sensors[i].close();
+					sensors[i] = null;
+				} else {
+					// TODO
 				}
 				
 			// Unsupported device
 			} else {
-				//TODO
+				// TODO
 			}
 		}
 		welcomeSocket.close();

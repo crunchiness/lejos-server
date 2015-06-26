@@ -9,10 +9,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import lejos.hardware.port.Port;
+import lejos.hardware.sensor.BaseSensor;
 import lejos.hardware.sensor.SensorMode;
 
 public abstract class Sensor {
-	public Port port;
+	private Port port;
 	public SensorMode mode;
 	public String modeName;
 	public int numberOfValues;
@@ -25,6 +26,7 @@ public abstract class Sensor {
 	}
 	
 	abstract public void setMode(String name);
+	abstract public void close();
 	
 
 	@SuppressWarnings("unchecked")
@@ -74,4 +76,5 @@ public abstract class Sensor {
 		// Pad since MATLAB is expecting 100 byte reply
 		return LocalServer.padString(jsonOutput);
 	}
+
 }

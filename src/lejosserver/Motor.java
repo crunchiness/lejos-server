@@ -38,6 +38,9 @@ public class Motor {
 			case RESETTACHO: this.m.resetTachoCount();break;
 			default: LCD.drawString("Unsupported motor cmd:" + cmd, 0, 4);
 		}
+		
+		// TODO test stopping rotate action
+		
 //		} else if (cmd.equals(new String("gettacho"))) {
 //			this.m.getTachoCount();
 //		} else if (cmd.equals(new String("rotate"))) {

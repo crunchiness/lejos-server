@@ -16,29 +16,15 @@ public abstract class Sensor {
 	public SensorMode mode;
 	public String modeName;
 	public int numberOfValues;
+	private String portName;
 
-	public Sensor(Port port) {
+	public Sensor(Port port, String portName) {
 		this.port = port;
+		this.portName = portName;
 		this.numberOfValues = 1; // how many values fetchSample returns depends on sensor mode
 	}
 	
 	abstract public void setMode(String name);
-//	public String getMode() {
-//		JSONObject outputObj = new JSONObject();
-//		outputObj.put("value", modeName);
-//		outputObj.put("dev", "sensor");
-//		outputObj.put("mode", modeName);
-//		outputObj.put("port", port.toString()); //TODO fix
-//		StringWriter out = new StringWriter();
-//		outputObj.writeJSONString(out);
-//		String jsonOutput = out.toString();
-//		
-//		// Pad since MATLAB is expecting 100 byte reply
-//		return LocalServer.padString(jsonOutput);
-//		
-//		
-//		return modeName;
-//	}
 	
 
 	@SuppressWarnings("unchecked")
@@ -55,7 +41,7 @@ public abstract class Sensor {
 		outputObj.put("value", valueList);
 		outputObj.put("dev", "sensor");
 		outputObj.put("mode", modeName);
-		outputObj.put("port", port.toString()); //TODO fix
+		outputObj.put("port", portName);
 		StringWriter out = new StringWriter();
 		outputObj.writeJSONString(out);
 		String jsonOutput = out.toString();
@@ -71,5 +57,21 @@ public abstract class Sensor {
 			list.add(array[i]);
 		}
 		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public String getMode() throws IOException {
+		
+		// Put values into JSON
+		JSONObject outputObj = new JSONObject();
+		outputObj.put("dev", "sensor");
+		outputObj.put("mode", modeName);
+		outputObj.put("port", portName);
+		StringWriter out = new StringWriter();
+		outputObj.writeJSONString(out);
+		String jsonOutput = out.toString();
+		
+		// Pad since MATLAB is expecting 100 byte reply
+		return LocalServer.padString(jsonOutput);
 	}
 }

@@ -81,13 +81,16 @@ public class LocalServer {
 					// ignore repeated inits
 					if (sensors[i] == null) {
 						if (cmd.strParam.equals(new String("color"))) {
-							sensors[i] = new ColorSensor(cmd.port);
+							sensors[i] = new ColorSensor(cmd.port, cmd.portName);
 						} else if (cmd.strParam.equals(new String("ir"))) {
-							sensors[i] = new IRSensor(cmd.port);
+							sensors[i] = new IRSensor(cmd.port, cmd.portName);
 						}
 					}
 				} else if (cmd.cmd == CmdType.GETVALUE) {
 					pw.println(sensors[i].getValue());
+					pw.flush();
+				} else if (cmd.cmd == CmdType.GETMODE) {
+					pw.println(sensors[i].getMode());
 					pw.flush();
 				} else if (cmd.cmd == CmdType.SETMODE) {
 					sensors[i].setMode(cmd.strParam);

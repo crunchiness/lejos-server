@@ -7,8 +7,8 @@ public class IRSensor extends Sensor {
 	
 	private EV3IRSensor sensor;
 
-	public IRSensor(Port port) {
-		super(port);
+	public IRSensor(Port port, String portName) {
+		super(port, portName);
 		this.sensor = new EV3IRSensor(port);
 		setMode("distance");
 	}

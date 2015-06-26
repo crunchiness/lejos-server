@@ -9,7 +9,7 @@ import lejos.hardware.port.SensorPort;
 public class Command {
 	public enum CmdType {
 		INIT, BEEP, BUZZ, EXIT, FORWARD, BACKWARD, STOP, CLOSE, RESETTACHO, GETSPEED, SETSPEED,
-		GETVALUE, SETMODE
+		GETVALUE, SETMODE, GETMODE
 	}
 
 	public enum DevType {
@@ -83,6 +83,7 @@ public class Command {
 		else if (cmdName.equals(new String("setspeed"))) { this.cmd = CmdType.SETSPEED; }
 		else if (cmdName.equals(new String("getvalue"))) { this.cmd = CmdType.GETVALUE; }
 		else if (cmdName.equals(new String("setmode"))) { this.cmd = CmdType.SETMODE; }
+		else if (cmdName.equals(new String("getmode"))) { this.cmd = CmdType.GETMODE; }
 		else {
 			// TODO
 		}

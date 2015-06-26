@@ -16,9 +16,9 @@ public class IRSensor extends Sensor {
 	@Override
 	public void setMode(String name) {
 		if (name.equals(new String("distance"))) {
-			this.mode = this.irSensor.getDistanceMode();
-			this.numberOfValues = 1;
-			this.modeName = "distance";
+			mode = this.irSensor.getDistanceMode();
+			numberOfValues = 1;
+			modeName = "distance";
 		} else {
 			// TODO
 		}

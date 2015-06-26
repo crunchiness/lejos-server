@@ -84,6 +84,10 @@ public class LocalServer {
 							sensors[i] = new ColorSensor(cmd.port, cmd.portName);
 						} else if (cmd.strParam.equals(new String("ir"))) {
 							sensors[i] = new IRSensor(cmd.port, cmd.portName);
+						} else if (cmd.strParam.equals(new String("touch"))) {
+							sensors[i] = new TouchSensor(cmd.port, cmd.portName);
+						} else {
+							// TODO
 						}
 					}
 				} else if (cmd.cmd == CmdType.GETVALUE) {

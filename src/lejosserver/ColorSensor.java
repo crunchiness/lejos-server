@@ -17,19 +17,19 @@ public class ColorSensor extends Sensor {
 	public void setMode(String name) {
 		if (name.equals(new String("rgb"))) {
 			// Measures the RGB color of a surface
-			this.mode = colorSensor.getRGBMode();
-			this.numberOfValues = 3;
-			this.modeName = "rgb";
+			mode = colorSensor.getRGBMode();
+			numberOfValues = 3;
+			modeName = "rgb";
 		} else if (name.equals(new String("red"))){
 			// Measures the intensity of a reflected red
-			this.mode = colorSensor.getRedMode();
-			this.numberOfValues = 1;
-			this.modeName = "red";
+			mode = colorSensor.getRedMode();
+			numberOfValues = 1;
+			modeName = "red";
 		} else if (name.equals(new String("ambient"))){
 			// Measures the ambient light level
-			this.mode = colorSensor.getAmbientMode();
-			this.numberOfValues = 1;
-			this.modeName = "ambient";
+			mode = colorSensor.getAmbientMode();
+			numberOfValues = 1;
+			modeName = "ambient";
 		} else {
 			// TODO
 			// Color ID Measures the color ID of a surface getColorIDMode()

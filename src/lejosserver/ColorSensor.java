@@ -18,6 +18,9 @@ public class ColorSensor extends Sensor {
 		if (name.equals(new String("RGB"))) {
 			this.mode = this.sensor.getRGBMode();
 			this.numberOfValues = 3;
+			this.modeName = "RGB";
+		} else {
+			// TODO
 		}
 	}
 }

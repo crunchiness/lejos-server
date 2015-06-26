@@ -46,7 +46,7 @@ public abstract class Sensor {
 		
 		float[] sample = new float[this.numberOfValues];
 		mode.fetchSample(sample, 0);
-
+		
 		JSONArray valueList = new JSONArray();
 		valueList.addAll(toList(sample));
 		

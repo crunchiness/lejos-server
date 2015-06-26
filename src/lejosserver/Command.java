@@ -81,7 +81,7 @@ public class Command {
 		else if (cmdName.equals(new String("resettacho"))) { this.cmd = CmdType.RESETTACHO; }
 		else if (cmdName.equals(new String("getspeed"))) { this.cmd = CmdType.GETSPEED; }
 		else if (cmdName.equals(new String("setspeed"))) { this.cmd = CmdType.SETSPEED; }
-		else if (cmdName.equals(new String("getdistance"))) { this.cmd = CmdType.GETVALUE; }
+		else if (cmdName.equals(new String("getvalue"))) { this.cmd = CmdType.GETVALUE; }
 		else if (cmdName.equals(new String("setmode"))) { this.cmd = CmdType.SETMODE; }
 		else {
 			// TODO

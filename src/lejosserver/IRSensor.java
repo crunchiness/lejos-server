@@ -10,13 +10,18 @@ public class IRSensor extends Sensor {
 	public IRSensor(Port port) {
 		super(port);
 		this.sensor = new EV3IRSensor(port);
-		this.mode = this.sensor.getDistanceMode();
+		setMode("distance");
 	}
 	
 	@Override
 	public void setMode(String name) {
-		// TODO Auto-generated method stub
-		
+		if (name.equals(new String("distance"))) {
+			this.mode = this.sensor.getDistanceMode();
+			this.numberOfValues = 1;
+			this.modeName = "distance";
+		} else {
+			// TODO
+		}
 	}
 	
 }

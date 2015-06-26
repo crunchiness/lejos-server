@@ -24,7 +24,7 @@ public class LocalServer {
 		boolean terminate = false;
 		String clientSentence;
 		ServerSocket welcomeSocket = new ServerSocket(6789);
-		LCD.drawString("CONGRATZ", 0, 4);
+		LCD.drawString("READY", 0, 4);
 		while (!terminate) {
 			Socket connectionSocket = welcomeSocket.accept();
 			BufferedReader inFromClient = new BufferedReader(
@@ -68,6 +68,9 @@ public class LocalServer {
 					pw.println(motors[i].getSpeed());
 			        pw.flush();
 				} else {
+//					if (motors[i] == null) {
+//	TODO					
+//					}
 					motors[i].actionQueue.add(cmd);
 				}
 

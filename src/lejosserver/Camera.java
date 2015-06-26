@@ -1,21 +1,25 @@
 package lejosserver;
 
 import java.awt.image.BufferedImage;
+import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import lejos.hardware.BrickFinder;
 import lejos.hardware.video.Video;
 
 public class Camera {
 
-	private static final int DEFAULT_WIDTH = 640;
-	private static final int DEFAULT_HEIGHT = 480;
+	private static final int DEFAULT_WIDTH = 160;
+	private static final int DEFAULT_HEIGHT = 120;
 	private int WIDTH;
 	private int HEIGHT;
 	private int NUM_PIXELS;
 	private int FRAME_SIZE;
 	private Video camera;
-
+// TODO camera init command
 	public Camera() {
 		this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
@@ -25,17 +29,17 @@ public class Camera {
 		HEIGHT = height;
 		NUM_PIXELS = width * height;
 		FRAME_SIZE = NUM_PIXELS * 2;
-
+		
 		camera = BrickFinder.getDefault().getVideo();
 		try {
 			camera.open(WIDTH, HEIGHT);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// TODO what?
 			e.printStackTrace();
 		}
 	}
 
-	public void getImage() {
+	public void takePicture() throws IOException {
 		byte[] frame = camera.createFrame();
 		try {
 			camera.grabFrame(frame);
@@ -43,8 +47,7 @@ public class Camera {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		BufferedImage img = new BufferedImage(WIDTH, HEIGHT,
-				BufferedImage.TYPE_INT_RGB);
+		BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		for (int i = 0; i < FRAME_SIZE; i += 4) {
 			int y1 = frame[i] & 0xFF;
 			int y2 = frame[i + 2] & 0xFF;
@@ -55,6 +58,9 @@ public class Camera {
 			img.setRGB((i % (WIDTH * 2)) / 2, i / (WIDTH * 2), rgb1);
 			img.setRGB((i % (WIDTH * 2)) / 2 + 1, i / (WIDTH * 2), rgb2);
 		}
+		File f = new File("image.png");
+		ImageIO.write(img, "png", f);
+		//out.flush();
 	}
 
 	private static int convertYUVtoARGB(int y, int u, int v) {

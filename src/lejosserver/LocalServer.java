@@ -18,6 +18,8 @@ public class LocalServer {
 	// Sensor ports: S1, S2, S3, S4
 	private static Sensor[] sensors = {null, null, null, null};
 	
+	private static Camera camera;
+	
 	public LocalServer() {}
 	
 	public static void main(String argv[]) throws Exception {
@@ -105,7 +107,9 @@ public class LocalServer {
 				} else {
 					// TODO
 				}
-				
+			} else if (cmd.dev == DevType.CAMERA) {
+				camera = new Camera();
+				camera.takePicture();
 			// Unsupported device
 			} else {
 				// TODO

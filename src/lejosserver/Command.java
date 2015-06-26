@@ -9,11 +9,11 @@ import lejos.hardware.port.SensorPort;
 public class Command {
 	public enum CmdType {
 		INIT, BEEP, BUZZ, EXIT, FORWARD, BACKWARD, STOP, CLOSE, RESETTACHO, GETSPEED, SETSPEED,
-		GETVALUE, SETMODE, GETMODE
+		GETVALUE, SETMODE, GETMODE, TAKEPIC
 	}
 
 	public enum DevType {
-		BRICK, MOTOR, SENSOR
+		BRICK, MOTOR, SENSOR, CAMERA
 	}
 
 	public DevType dev;
@@ -33,6 +33,8 @@ public class Command {
 			this.dev = DevType.BRICK;
 		} else if (dev.equals(new String("sensor"))) {
 			this.dev = DevType.SENSOR;
+		} else if (dev.equals(new String("camera"))) {
+			this.dev = DevType.CAMERA;
 		} else {
 			// TODO
 		}
@@ -84,6 +86,7 @@ public class Command {
 		else if (cmdName.equals(new String("getvalue"))) { this.cmd = CmdType.GETVALUE; }
 		else if (cmdName.equals(new String("setmode"))) { this.cmd = CmdType.SETMODE; }
 		else if (cmdName.equals(new String("getmode"))) { this.cmd = CmdType.GETMODE; }
+		else if (cmdName.equals(new String("takepic"))) { this.cmd = CmdType.TAKEPIC; }
 		else {
 			// TODO
 		}

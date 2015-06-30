@@ -34,3 +34,5 @@ motor commands:
 "init", "forward", "backward", "stop", "getspeed", "setspeed", "resettacho"
 sensor commands:
 "init", "getvalue", "setmode"
+
+If you want to change camera resolution (although only 160x120 and 176x144 seem to be supported), first CLOSE the camera and initialize again.

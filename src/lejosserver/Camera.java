@@ -2,24 +2,23 @@ package lejosserver;
 
 import java.awt.image.BufferedImage;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import lejos.hardware.BrickFinder;
+import lejos.hardware.lcd.LCD;
 import lejos.hardware.video.Video;
 
 public class Camera {
 
-	private static final int DEFAULT_WIDTH = 160;
-	private static final int DEFAULT_HEIGHT = 120;
+	private static final int DEFAULT_WIDTH = 176;  // the highest supported for some reason
+	private static final int DEFAULT_HEIGHT = 144; //
 	private int WIDTH;
 	private int HEIGHT;
 	private int NUM_PIXELS;
 	private int FRAME_SIZE;
 	private Video camera;
-// TODO camera init command
 	public Camera() {
 		this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
@@ -33,16 +32,34 @@ public class Camera {
 		camera = BrickFinder.getDefault().getVideo();
 		try {
 			camera.open(WIDTH, HEIGHT);
+			getResolution();
+			
 		} catch (IOException e) {
 			// TODO what?
 			e.printStackTrace();
 		}
 	}
 
-	public void takePicture() throws IOException {
+	public void getResolution() {
+		int width = camera.getWidth();
+		int height = camera.getHeight();
+		WIDTH = width;
+		HEIGHT = height;
+		NUM_PIXELS = width * height;
+		FRAME_SIZE = NUM_PIXELS * 2;
+		LCD.drawString("W" + Integer.toString(width) + "H" + Integer.toString(height), 0, 4);
+	}
+	
+	public void closeCamera() throws IOException {
+		camera.close();
+	}
+	
+	public void takePicture(DataOutputStream out) throws IOException {
 		byte[] frame = camera.createFrame();
 		try {
-			camera.grabFrame(frame);
+			for (int i = 0; i < 6; i++) {
+				camera.grabFrame(frame);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,9 +75,8 @@ public class Camera {
 			img.setRGB((i % (WIDTH * 2)) / 2, i / (WIDTH * 2), rgb1);
 			img.setRGB((i % (WIDTH * 2)) / 2 + 1, i / (WIDTH * 2), rgb2);
 		}
-		File f = new File("image.png");
-		ImageIO.write(img, "png", f);
-		//out.flush();
+		ImageIO.write(img, "bmp", out);
+		out.flush();
 	}
 
 	private static int convertYUVtoARGB(int y, int u, int v) {

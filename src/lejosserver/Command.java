@@ -20,7 +20,8 @@ public class Command {
 	public CmdType cmd;
 	public String cmdName;
 	public String portName;
-	public int intParam;
+	public int intParam = -666;
+	public int intParam2 = -666;
 	public String strParam;
 	public Port port;
 	public int portIndex;
@@ -102,6 +103,13 @@ public class Command {
 			Object param = command.get("type");
 			if (param != null) {
 				this.strParam = (String) param;
+			}
+		} else if (this.cmd == CmdType.INIT && this.dev == DevType.CAMERA) {
+			Object width = command.get("width");
+			Object height = command.get("height");
+			if (width != null && height != null) {
+				this.intParam = (int) (long) width;
+				this.intParam2 = (int) (long) height;
 			}
 		}
 	}

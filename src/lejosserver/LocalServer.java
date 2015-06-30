@@ -20,8 +20,6 @@ public class LocalServer {
 	
 	private static Camera camera;
 	
-	public LocalServer() {}
-	
 	public static void main(String argv[]) throws Exception {
 		boolean terminate = false;
 		String clientSentence;
@@ -108,8 +106,20 @@ public class LocalServer {
 					// TODO
 				}
 			} else if (cmd.dev == DevType.CAMERA) {
-				camera = new Camera();
-				camera.takePicture();
+				if (cmd.cmd == CmdType.INIT) {
+					if (camera == null) {
+						if (cmd.intParam > 0) {
+							camera = new Camera(cmd.intParam, cmd.intParam2);
+						} else {
+							camera = new Camera(); // TODO allow setting resolution
+						}
+					}
+				} else if (cmd.cmd == CmdType.TAKEPIC) {
+					camera.takePicture(outToClient);
+				} else if (cmd.cmd == CmdType.CLOSE) {
+					camera.closeCamera();
+					camera = null;
+				}
 			// Unsupported device
 			} else {
 				// TODO

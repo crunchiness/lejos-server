@@ -1,6 +1,7 @@
 package lejosserver;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -9,19 +10,24 @@ import org.json.simple.JSONObject;
 
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.robotics.RegulatedMotor;
+import lejosserver.Command.MotorType;
 
 public class Motor {
-	
-	private Port port;
+	private String portName;
 	private RegulatedMotor m;
 	private MotorThread motorThread;
 	public BlockingQueue<Command> actionQueue = new ArrayBlockingQueue<Command>(1);
 
-	public Motor(Port port) {
-		this.port = port;
-		this.m = new EV3LargeRegulatedMotor(port); //TODO add support for small motor
+	public Motor(Port port, String portName, MotorType motorType) {
+		this.portName = portName;
+		switch(motorType) {
+			case MEDIUM: this.m = new EV3MediumRegulatedMotor(port);break;
+			case LARGE: this.m = new EV3LargeRegulatedMotor(port);break;
+			default: // TODO
+		}
 	}
 	
 	public void init() {
@@ -30,50 +36,71 @@ public class Motor {
 		motorThread.start();
 	}
 	
+	public void executeCmd(Command cmd, PrintWriter pw) throws IOException {
+		switch(cmd.cmd) {
+			case FORWARD: actionQueue.add(cmd);break;	
+			case BACKWARD: actionQueue.add(cmd);break;
+			case GETSPEED: getSpeed(pw);break;
+			case SETSPEED: setSpeed(cmd.speed);break;
+			case STOP: this.m.stop();break;
+			case GETTACHO: getTacho(pw);break;
+			case RESETTACHO: this.m.resetTachoCount();break;
+			case ROTATE: rotate(cmd.rotateDeg);break;
+			//TODO close!!!
+			default: //TODO
+		}
+	}
+	
+	public void rotate(int angle) {
+		if (angle != Integer.MIN_VALUE) {
+			this.m.rotate(angle);
+		} else {
+			// TODO no rotation angle
+		}
+	}
+	
 	public void executeAsyncCmd(Command cmd) {
 		switch(cmd.cmd) {
 			case FORWARD: this.m.forward();break;
 			case BACKWARD: this.m.backward();break;
-			case STOP: this.m.stop();break;
-			case RESETTACHO: this.m.resetTachoCount();break;
 			default: LCD.drawString("Unsupported motor cmd:" + cmd, 0, 4);
 		}
-		
-		// TODO test stopping rotate action
-		
-//		} else if (cmd.equals(new String("gettacho"))) {
-//			this.m.getTachoCount();
-//		} else if (cmd.equals(new String("rotate"))) {
-//			this.m.rotate(angle);
 	}
-
-	public void setAcceleration(int acceleration) {
-		this.m.setAcceleration(acceleration);
-	}
-
+	
 	@SuppressWarnings("unchecked")
-	public String getSpeed() throws IOException {
+	public void getSpeed(PrintWriter pw) throws IOException {
 		int speed = this.m.getSpeed();
 		JSONObject outputObj = new JSONObject();
 		outputObj.put("speed", new Integer(speed));
 		outputObj.put("dev", "motor");
-		outputObj.put("port", port.toString()); //TODO fix
+		outputObj.put("port", portName);
 		StringWriter out = new StringWriter();
 		outputObj.writeJSONString(out);
 		String jsonOutput = out.toString();
-		return LocalServer.padString(jsonOutput);
+		pw.println(LocalServer.padString(jsonOutput));
+		pw.flush();
 	}
-
+	
 	public void setSpeed(int speed) {
-		this.m.setSpeed(speed);
+		if (speed > 0) {
+			this.m.setSpeed(speed);
+		} else {
+			// TODO speed not set or negative
+		}
 	}
 
-	public int getRotationSpeed() {
-		return this.m.getRotationSpeed();
-	}
-
-	public float getMaxSpeed() {
-		return this.m.getMaxSpeed();
+	@SuppressWarnings("unchecked")
+	public void getTacho(PrintWriter pw) throws IOException {
+		int count = this.m.getTachoCount();
+		JSONObject outputObj = new JSONObject();
+		outputObj.put("tacho", new Integer(count));
+		outputObj.put("dev", "motor");
+		outputObj.put("port", portName);
+		StringWriter out = new StringWriter();
+		outputObj.writeJSONString(out);
+		String jsonOutput = out.toString();
+		pw.println(LocalServer.padString(jsonOutput));
+		pw.flush();
 	}
 	
 	private class MotorThread extends Thread {
@@ -89,4 +116,5 @@ public class Motor {
 			}
 		}
 	}
+
 }

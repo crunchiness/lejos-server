@@ -58,61 +58,42 @@ public class LocalServer {
 			// Motor commands
 			} else if (cmd.dev == DevType.MOTOR) {
 				int i = cmd.portIndex;
-				if (cmd.cmd == CmdType.INIT) {
-					// ignore repeated inits
-					if (motors[i] == null) {
-						motors[i] = new Motor(cmd.port);
-						motors[i].init();
-					}
-				} else if (cmd.cmd == CmdType.GETSPEED) {
-					pw.println(motors[i].getSpeed());
-			        pw.flush();
+				if (cmd.cmd == CmdType.INIT && motors[i] == null) {
+					motors[i] = new Motor(cmd.port, cmd.portName, cmd.motorType);
+					motors[i].init();
+				} else if (motors[i] != null){
+					motors[i].executeCmd(cmd, pw);
 				} else {
-//					if (motors[i] == null) {
-//	TODO					
-//					}
-					motors[i].actionQueue.add(cmd);
+					// TODO either repeated init or command on non inited motor
 				}
 
 			// Sensor commands
 			} else if (cmd.dev == DevType.SENSOR) {
 				int i = cmd.portIndex;
-				if (cmd.cmd == CmdType.INIT) {
-					// ignore repeated inits
-					if (sensors[i] == null) {
-						if (cmd.strParam.equals(new String("color"))) {
-							sensors[i] = new ColorSensor(cmd.port, cmd.portName);
-						} else if (cmd.strParam.equals(new String("ir"))) {
-							sensors[i] = new IRSensor(cmd.port, cmd.portName);
-						} else if (cmd.strParam.equals(new String("touch"))) {
-							sensors[i] = new TouchSensor(cmd.port, cmd.portName);
-						} else {
-							// TODO
-						}
+				if (cmd.cmd == CmdType.INIT && sensors[i] == null) {
+					switch (cmd.sensorType) {
+						case COLOR: sensors[i] = new ColorSensor(cmd.port, cmd.portName);break;
+						case IR: sensors[i] = new IRSensor(cmd.port, cmd.portName);break;
+						case TOUCH: sensors[i] = new TouchSensor(cmd.port, cmd.portName);
+						default: // TODO
 					}
-				} else if (cmd.cmd == CmdType.GETVALUE) {
-					pw.println(sensors[i].getValue());
-					pw.flush();
-				} else if (cmd.cmd == CmdType.GETMODE) {
-					pw.println(sensors[i].getMode());
-					pw.flush();
-				} else if (cmd.cmd == CmdType.SETMODE) {
-					sensors[i].setMode(cmd.strParam);
 				} else if (cmd.cmd == CmdType.CLOSE) {
 					//TODO should not throw error if sensor wasn't initialized
 					sensors[i].close();
 					sensors[i] = null;
-				} else {
-					// TODO
+				} else if (sensors[i] != null) {
+					sensors[i].executeCmd(cmd, pw);
+				} else {					
+					// TODO either repeated init or command on non inited sensor
 				}
+				
+			// Camera commands
 			} else if (cmd.dev == DevType.CAMERA) {
-				if (cmd.cmd == CmdType.INIT) {
-					if (camera == null) {
-						if (cmd.intParam > 0) {
-							camera = new Camera(cmd.intParam, cmd.intParam2);
-						} else {
-							camera = new Camera(); // TODO allow setting resolution
-						}
+				if (cmd.cmd == CmdType.INIT && camera == null) {
+					if (cmd.camWidth > 0 && cmd.camHeight > 0) {
+						camera = new Camera(cmd.camWidth, cmd.camHeight);
+					} else {
+						camera = new Camera();
 					}
 				} else if (cmd.cmd == CmdType.TAKEPIC) {
 					camera.takePicture(outToClient);

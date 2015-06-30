@@ -33,7 +33,6 @@ public class Camera {
 		try {
 			camera.open(WIDTH, HEIGHT);
 			getResolution();
-			
 		} catch (IOException e) {
 			// TODO what?
 			e.printStackTrace();

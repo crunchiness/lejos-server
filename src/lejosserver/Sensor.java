@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import lejos.hardware.sensor.SensorMode;
 import lejosserver.Command.Mode;
+import lejosserver.ErrorMode.ErrorType;
 
 public abstract class Sensor {
 	public SensorMode mode;
@@ -83,7 +84,7 @@ public abstract class Sensor {
 			case GETMODE: getMode(pw);break;
 			case SETMODE: setMode(cmd.sensorMode, cmd.modeName);break;
 			case CLOSE: break;
-			default: //TODO
+			default: new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
 		}
 	}
 

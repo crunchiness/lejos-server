@@ -3,6 +3,7 @@ package lejosserver;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejosserver.Command.Mode;
+import lejosserver.ErrorMode.ErrorType;
 
 public class TouchSensor extends Sensor {
 
@@ -24,7 +25,7 @@ public class TouchSensor extends Sensor {
 				break;
 			}
 			default: {
-				// TODO
+				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
 			}
 		}
 	}

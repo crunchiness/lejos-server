@@ -5,7 +5,12 @@ import org.json.simple.JSONObject;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
+import lejosserver.ErrorMode.ErrorType;
 
+/**
+ * @author Ingvaras Merkys
+ * A class that represents a command to robot. Initialised from JSON string.
+ */
 public class Command {
 	public enum CmdType {
 		INIT, BEEP, BUZZ, EXIT, FORWARD, BACKWARD, STOP, CLOSE, GETTACHO, RESETTACHO, GETSPEED, SETSPEED,
@@ -58,17 +63,44 @@ public class Command {
 	 */
 	public Command(JSONObject command) {
 		// TODO what if casts fail
-		// Parse "dev"
+		parseDev(command);
+		parseCmd(command);
+		if (dev == DevType.MOTOR || dev == DevType.SENSOR) {
+			parsePort(command);
+		}
+		if (dev == DevType.SENSOR && cmd == CmdType.INIT) {
+			parseSensorType(command);
+		}
+		if (dev == DevType.MOTOR && cmd == CmdType.INIT) {
+			parseMotorType(command);
+		}
+		if (dev == DevType.CAMERA && cmd == CmdType.INIT) {
+			parseCamWidth(command);
+			parseCamHeight(command);
+		}
+		if (cmd == CmdType.SETMODE) {
+			parseSensorMode(command);
+		}
+		if (cmd == CmdType.ROTATE) {
+			parseRotateDeg(command);
+		}
+		if (cmd == CmdType.SETSPEED) {
+			parseSpeed(command);
+		}
+	}
+	
+	private void parseDev(JSONObject command) {
 		devName = (String) command.get("dev");
 		if (devName.equals(new String("motor"))) { dev = DevType.MOTOR; }
 		else if (devName.equals(new String("brick"))) {	dev = DevType.BRICK; }
 		else if (devName.equals(new String("sensor"))) { dev = DevType.SENSOR;	}
 		else if (devName.equals(new String("camera"))) { dev = DevType.CAMERA;	}
 		else {
-			// TODO
+			new ErrorMode(ErrorType.UNKNOWN_DEV, devName);
 		}
-
-		// Parse "port"
+	}
+	
+	private void parsePort(JSONObject command) {
 		portName = (String) command.get("port");
 		if (portName.equals(new String("A"))) {
 			this.port = MotorPort.A;
@@ -95,10 +127,11 @@ public class Command {
 			this.port = SensorPort.S4;
 			this.portIndex = 3;
 		} else {
-			// TODO
+			new ErrorMode(ErrorType.UNKNOWN_PORT, portName);
 		}
-
-		// Parse "cmd"
+	}
+	
+	private void parseCmd(JSONObject command) {
 		cmdName = (String) command.get("cmd");
 		if (cmdName.equals(new String("init"))) { this.cmd = CmdType.INIT; }
 		else if (cmdName.equals(new String("beep"))) { this.cmd = CmdType.BEEP; }
@@ -118,27 +151,30 @@ public class Command {
 		else if (cmdName.equals(new String("gettacho"))) { this.cmd = CmdType.GETTACHO; }
 		else if (cmdName.equals(new String("rotate"))) { this.cmd = CmdType.ROTATE; }
 		else {
-			// TODO
+			new ErrorMode(ErrorType.UNKNOWN_COMMAND, cmdName);
 		}
-
-		// Parse "sensor_type"
+	}
+	
+	private void parseSensorType(JSONObject command) {
 		sensorName = (String) command.get("sensor_type");
 		if (sensorName.equals(new String("color"))) { sensorType = SensorType.COLOR; }
 		else if (sensorName.equals(new String("ir"))) { sensorType = SensorType.IR; }
 		else if (sensorName.equals(new String("touch"))) { sensorType = SensorType.TOUCH; }
 		else {
-			// TODO
+			new ErrorMode(ErrorType.UNKNOWN_SENSOR, sensorName);
 		}
-		
-		// Parse "motor_type"
+	}
+	
+	private void parseMotorType(JSONObject command) {
 		motorName = (String) command.get("motor_type");
 		if (motorName.equals(new String("medium"))) { motorType = MotorType.MEDIUM; }
 		else if (motorName.equals(new String("large"))) {motorType = MotorType.LARGE; }
 		else {
-			// TODO
+			new ErrorMode(ErrorType.UNKNOWN_MOTOR, motorName);
 		}
-		
-		// Parse "mode" (sensor mode)
+	}
+	
+	private void parseSensorMode(JSONObject command) {
 		modeName = (String) command.get("mode");
 		if (modeName.equals(new String("rgb"))) { sensorMode = Mode.RGB; }
 		else if (modeName.equals(new String("red"))) { sensorMode = Mode.RED; }
@@ -146,40 +182,43 @@ public class Command {
 		else if (modeName.equals(new String("distance"))) { sensorMode = Mode.DISTANCE; }
 		else if (modeName.equals(new String("touch"))) { sensorMode = Mode.TOUCH; }
 		else {
-			// TODO
+			new ErrorMode(ErrorType.UNKNOWN_SENSOR_MODE, modeName);
 		}
-		
-		// Parse "cam_width"
+	}
+	
+	private void parseCamWidth(JSONObject command) {
 		Long widthObj = (Long) command.get("cam_width");
 		if (widthObj != null) {
 			camWidth = (int) (long) widthObj;
 		} else {
-			// TODO
+			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "cam_width");
 		}
-		
-		// Parse "cam_height"
+	}
+	
+	private void parseCamHeight(JSONObject command) {
 		Long heightObj = (Long) command.get("cam_height");
 		if (heightObj != null) {
 			camHeight = (int) (long) heightObj;
 		} else {
-			// TODO
+			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "cam_height");
 		}
-		
-		// Parse "speed"
+	}
+	
+	private void parseSpeed(JSONObject command) {
 		Long speedObj = (Long) command.get("speed");
 		if (speedObj != null) {
 			speed = (int) (long) speedObj;
 		} else {
-			// TODO
+			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "speed");
 		}
-		
-		// Parse "rotate_deg"
+	}
+	
+	private void parseRotateDeg(JSONObject command) {
 		Long rotateDegObj = (Long) command.get("rotate_deg");
 		if (rotateDegObj != null) {
 			rotateDeg  = (int) (long) rotateDegObj;
 		} else {
-			// TODO
+			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "rotate_deg");
 		}
-		// TODO check for required?
 	}
 }

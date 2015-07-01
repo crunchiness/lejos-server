@@ -14,6 +14,7 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.robotics.RegulatedMotor;
 import lejosserver.Command.MotorType;
+import lejosserver.ErrorMode.ErrorType;
 
 public class Motor {
 	private String portName;
@@ -27,7 +28,9 @@ public class Motor {
 		switch(motorType) {
 			case MEDIUM: this.m = new EV3MediumRegulatedMotor(port);break;
 			case LARGE: this.m = new EV3LargeRegulatedMotor(port);break;
-			default: // TODO
+			default: {
+				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
+			}
 		}
 	}
 	
@@ -49,7 +52,9 @@ public class Motor {
 			case GETTACHO: getTacho(pw);break;
 			case RESETTACHO: this.m.resetTachoCount();break;
 			case ROTATE: rotate(cmd.rotateDeg);break;
-			default: //TODO
+			default: {
+				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
+			}
 		}
 	}
 	
@@ -57,7 +62,7 @@ public class Motor {
 		if (angle != Integer.MIN_VALUE) {
 			this.m.rotate(angle);
 		} else {
-			// TODO no rotation angle
+			new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
 		}
 	}
 	
@@ -87,7 +92,7 @@ public class Motor {
 		if (speed > 0) {
 			this.m.setSpeed(speed);
 		} else {
-			// TODO speed not set or negative
+			new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
 		}
 	}
 

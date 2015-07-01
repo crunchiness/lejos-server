@@ -3,6 +3,7 @@ package lejosserver;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3IRSensor;
 import lejosserver.Command.Mode;
+import lejosserver.ErrorMode.ErrorType;
 
 public class IRSensor extends Sensor {
 	
@@ -24,7 +25,7 @@ public class IRSensor extends Sensor {
 				break;
 			}
 			default: {
-				// TODO
+				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
 			}
 		}
 	}

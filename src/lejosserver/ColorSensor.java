@@ -3,6 +3,7 @@ package lejosserver;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejosserver.Command.Mode;
+import lejosserver.ErrorMode.ErrorType;
 
 public class ColorSensor extends Sensor {
 
@@ -40,8 +41,7 @@ public class ColorSensor extends Sensor {
 			}
 			default: {
 				// TODO Color ID Measures the color ID of a surface getColorIDMode()
-				// TODO unsupported
-				break;
+				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
 			}
 		}
 	}

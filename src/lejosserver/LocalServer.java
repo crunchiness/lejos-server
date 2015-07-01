@@ -7,6 +7,7 @@ import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejosserver.Command.CmdType;
 import lejosserver.Command.DevType;
+import lejosserver.ErrorMode.ErrorType;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -73,7 +74,7 @@ public class LocalServer {
 				} else if (motors[i] != null){
 					motors[i].executeCmd(cmd, pw);
 				} else {
-					// TODO command on non inited motor
+					new ErrorMode(ErrorType.NOT_INIT_MOTOR, cmd.cmdName);
 				}
 
 			// Sensor commands
@@ -86,7 +87,7 @@ public class LocalServer {
 							case COLOR: sensors[i] = new ColorSensor(cmd.port, cmd.portName);break;
 							case IR: sensors[i] = new IRSensor(cmd.port, cmd.portName);break;
 							case TOUCH: sensors[i] = new TouchSensor(cmd.port, cmd.portName);
-							default: // TODO
+							default: new ErrorMode(ErrorType.SYSTEM_ERROR, "main loop sensors");
 						}
 					}
 				} else if (cmd.cmd == CmdType.CLOSE) {
@@ -98,7 +99,7 @@ public class LocalServer {
 				} else if (sensors[i] != null) {
 					sensors[i].executeCmd(cmd, pw);
 				} else {					
-					// TODO command on non inited sensor
+					new ErrorMode(ErrorType.NOT_INIT_SENSOR, cmd.cmdName);
 				}
 				
 			// Camera commands
@@ -113,7 +114,8 @@ public class LocalServer {
 								camera = new Camera();
 							}
 						} catch (IOException e) {
-							// TODO probably forgot to connect camera
+							new ErrorMode(ErrorType.NOT_CONNECTED_CAM);
+							// TODO check if connected sensors/motors
 						}
 					}
 				} else if (cmd.cmd == CmdType.CLOSE) {
@@ -127,12 +129,12 @@ public class LocalServer {
 						 camera.takePicture(outStream);
 					 }
 				} else {
-					// TODO command on non inited camera
+					new ErrorMode(ErrorType.NOT_INIT_CAM, cmd.cmdName);
 				}
 
 			// Unsupported device
 			} else {
-				// TODO
+				new ErrorMode(ErrorType.SYSTEM_ERROR, "main loop sensors");
 			}
 		}
 		socket.close();

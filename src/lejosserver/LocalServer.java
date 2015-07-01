@@ -23,16 +23,16 @@ public class LocalServer {
 	public static void main(String argv[]) throws Exception {
 		boolean terminate = false;
 		String clientSentence;
-		ServerSocket welcomeSocket = new ServerSocket(6789);
+		ServerSocket socket = new ServerSocket(6789);
 		LCD.drawString("READY", 0, 4);
 		while (!terminate) {
-			Socket connectionSocket = welcomeSocket.accept();
-			BufferedReader inFromClient = new BufferedReader(
+			Socket connectionSocket = socket.accept();
+			BufferedReader inReader = new BufferedReader(
 					new InputStreamReader(connectionSocket.getInputStream()));
-			clientSentence = inFromClient.readLine();
-			DataOutputStream outToClient = new DataOutputStream(
+			clientSentence = inReader.readLine();
+			DataOutputStream outStream = new DataOutputStream(
 					connectionSocket.getOutputStream());
-			PrintWriter pw = new PrintWriter(outToClient);
+			PrintWriter pw = new PrintWriter(outStream);
 			
 			LCD.drawString(clientSentence, 0, 4);
 			
@@ -58,55 +58,84 @@ public class LocalServer {
 			// Motor commands
 			} else if (cmd.dev == DevType.MOTOR) {
 				int i = cmd.portIndex;
-				if (cmd.cmd == CmdType.INIT && motors[i] == null) {
-					motors[i] = new Motor(cmd.port, cmd.portName, cmd.motorType);
-					motors[i].init();
+				if (cmd.cmd == CmdType.INIT) {
+					// if initialised already, ignore this command
+					if (motors[i] == null) {
+						motors[i] = new Motor(cmd.port, cmd.portName, cmd.motorType);
+						motors[i].init();
+					}
+				} else if (cmd.cmd == CmdType.CLOSE) {
+					// if motor wasn't initialised, ignore this command
+					if (motors[i] != null) {
+						motors[i].close();
+						motors[i] = null;
+					}
 				} else if (motors[i] != null){
 					motors[i].executeCmd(cmd, pw);
 				} else {
-					// TODO either repeated init or command on non inited motor
+					// TODO command on non inited motor
 				}
 
 			// Sensor commands
 			} else if (cmd.dev == DevType.SENSOR) {
 				int i = cmd.portIndex;
-				if (cmd.cmd == CmdType.INIT && sensors[i] == null) {
-					switch (cmd.sensorType) {
-						case COLOR: sensors[i] = new ColorSensor(cmd.port, cmd.portName);break;
-						case IR: sensors[i] = new IRSensor(cmd.port, cmd.portName);break;
-						case TOUCH: sensors[i] = new TouchSensor(cmd.port, cmd.portName);
-						default: // TODO
+				if (cmd.cmd == CmdType.INIT) {
+					// if initialised already, ignore this command
+					if (sensors[i] == null) {
+						switch (cmd.sensorType) {
+							case COLOR: sensors[i] = new ColorSensor(cmd.port, cmd.portName);break;
+							case IR: sensors[i] = new IRSensor(cmd.port, cmd.portName);break;
+							case TOUCH: sensors[i] = new TouchSensor(cmd.port, cmd.portName);
+							default: // TODO
+						}
 					}
 				} else if (cmd.cmd == CmdType.CLOSE) {
-					//TODO should not throw error if sensor wasn't initialized
-					sensors[i].close();
-					sensors[i] = null;
+					// if sensor wasn't initialised, ignore this command
+					if (sensors[i] != null) {
+						sensors[i].close();
+						sensors[i] = null;
+					}
 				} else if (sensors[i] != null) {
 					sensors[i].executeCmd(cmd, pw);
 				} else {					
-					// TODO either repeated init or command on non inited sensor
+					// TODO command on non inited sensor
 				}
 				
 			// Camera commands
 			} else if (cmd.dev == DevType.CAMERA) {
-				if (cmd.cmd == CmdType.INIT && camera == null) {
-					if (cmd.camWidth > 0 && cmd.camHeight > 0) {
-						camera = new Camera(cmd.camWidth, cmd.camHeight);
-					} else {
-						camera = new Camera();
+				if (cmd.cmd == CmdType.INIT) {
+					// if initialised already, ignore this command
+					if (camera == null) {
+						try {
+							if (cmd.camWidth > 0 && cmd.camHeight > 0) {
+								camera = new Camera(cmd.camWidth, cmd.camHeight);
+							} else {
+								camera = new Camera();
+							}
+						} catch (IOException e) {
+							// TODO probably forgot to connect camera
+						}
 					}
-				} else if (cmd.cmd == CmdType.TAKEPIC) {
-					camera.takePicture(outToClient);
 				} else if (cmd.cmd == CmdType.CLOSE) {
-					camera.closeCamera();
-					camera = null;
+					// if sensor wasn't initialised, ignore this command
+					if (camera != null) {
+						camera.closeCamera();
+						camera = null;
+					}
+				} else if (camera != null) {
+					 if (cmd.cmd == CmdType.TAKEPIC) {
+						 camera.takePicture(outStream);
+					 }
+				} else {
+					// TODO command on non inited camera
 				}
+
 			// Unsupported device
 			} else {
 				// TODO
 			}
 		}
-		welcomeSocket.close();
+		socket.close();
 	}
 
 	public static String padString(String str) {

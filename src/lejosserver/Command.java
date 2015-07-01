@@ -47,8 +47,8 @@ public class Command {
 	public Port port;
 	public int portIndex;
 	
-	public int camWidth = Integer.MIN_VALUE; // TODO default?
-	public int camHeight = Integer.MIN_VALUE; // TODO default?
+	public int camWidth = Integer.MIN_VALUE;
+	public int camHeight = Integer.MIN_VALUE;
 	public int speed = Integer.MIN_VALUE;
 	public int rotateDeg = Integer.MIN_VALUE;
 	

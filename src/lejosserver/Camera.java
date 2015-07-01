@@ -19,24 +19,19 @@ public class Camera {
 	private int NUM_PIXELS;
 	private int FRAME_SIZE;
 	private Video camera;
-	public Camera() {
+	public Camera() throws IOException {
 		this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 
-	public Camera(int width, int height) {
+	public Camera(int width, int height) throws IOException {
 		WIDTH = width;
 		HEIGHT = height;
 		NUM_PIXELS = width * height;
 		FRAME_SIZE = NUM_PIXELS * 2;
 		
 		camera = BrickFinder.getDefault().getVideo();
-		try {
-			camera.open(WIDTH, HEIGHT);
-			getResolution();
-		} catch (IOException e) {
-			// TODO what?
-			e.printStackTrace();
-		}
+		camera.open(WIDTH, HEIGHT);
+		getResolution();
 	}
 
 	public void getResolution() {
@@ -55,13 +50,8 @@ public class Camera {
 	
 	public void takePicture(DataOutputStream out) throws IOException {
 		byte[] frame = camera.createFrame();
-		try {
-			for (int i = 0; i < 6; i++) {
-				camera.grabFrame(frame);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (int i = 0; i < 6; i++) {
+			camera.grabFrame(frame);
 		}
 		BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		for (int i = 0; i < FRAME_SIZE; i += 4) {

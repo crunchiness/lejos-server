@@ -19,6 +19,7 @@ public class Motor {
 	private String portName;
 	private RegulatedMotor m;
 	private MotorThread motorThread;
+	private boolean running = false;
 	public BlockingQueue<Command> actionQueue = new ArrayBlockingQueue<Command>(1);
 
 	public Motor(Port port, String portName, MotorType motorType) {
@@ -33,10 +34,12 @@ public class Motor {
 	public void init() {
 		motorThread = new MotorThread();
 		motorThread.setDaemon(true);
+		running = true;
 		motorThread.start();
 	}
 	
 	public void executeCmd(Command cmd, PrintWriter pw) throws IOException {
+		// closing has to be done from the outside (want to null this instance)
 		switch(cmd.cmd) {
 			case FORWARD: actionQueue.add(cmd);break;	
 			case BACKWARD: actionQueue.add(cmd);break;
@@ -46,7 +49,6 @@ public class Motor {
 			case GETTACHO: getTacho(pw);break;
 			case RESETTACHO: this.m.resetTachoCount();break;
 			case ROTATE: rotate(cmd.rotateDeg);break;
-			//TODO close!!!
 			default: //TODO
 		}
 	}
@@ -106,15 +108,21 @@ public class Motor {
 	private class MotorThread extends Thread {
 		@Override
 		public void run() {
-			while(true) {
+			while(running) {
 				try {
 					Command cmd = actionQueue.take();
 					executeAsyncCmd(cmd);
 				} catch (InterruptedException e) {
+					running = false;
 					// exit if interrupted
 				}
 			}
 		}
+	}
+
+	public void close() {
+		running = false;
+		m.close();
 	}
 
 }

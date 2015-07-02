@@ -35,9 +35,10 @@ public class ErrorMode {
 		map.put(ErrorType.NOT_INIT_CAM, "Cmd '%s'. Camera not init.");
 		map.put(ErrorType.NOT_INIT_MOTOR, "Cmd '%s'. Motor not init.");
 		map.put(ErrorType.NOT_INIT_SENSOR, "Cmd '%s'. Sensor not init.");
-		map.put(ErrorType.NOT_CONNECTED_CAM, "Camera not connected?");
-		map.put(ErrorType.NOT_CONNECTED_MOTOR, "Motor not connected to port '%s'?");
-		map.put(ErrorType.NOT_CONNECTED_SENSOR, "Sensor not connected to port '%s'?");
+		map.put(ErrorType.NOT_CONNECTED_CAM, "No camera connected.");
+		map.put(ErrorType.NOT_CONNECTED_MOTOR, "Motor not connected to '%s' ().");
+		map.put(ErrorType.NOT_CONNECTED_MOTOR, "No motor / unexpected device at port '%s'.");
+		map.put(ErrorType.NOT_CONNECTED_SENSOR, "No sensor / unexpected device at port '%s'.");
 		// User should never see this:
 		map.put(ErrorType.SYSTEM_ERROR, "System error in '%s'.");
 		errorStringMap = Collections.unmodifiableMap(map);

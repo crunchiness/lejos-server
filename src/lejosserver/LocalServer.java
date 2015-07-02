@@ -87,8 +87,8 @@ public class LocalServer {
 						switch (cmd.sensorType) {
 							case COLOR: sensors[i] = new ColorSensor(cmd.port, cmd.portName);break;
 							case IR: sensors[i] = new IRSensor(cmd.port, cmd.portName);break;
-							case TOUCH: sensors[i] = new TouchSensor(cmd.port, cmd.portName);
-							default: new ErrorMode(ErrorType.SYSTEM_ERROR, "main loop sensors");
+							case TOUCH: sensors[i] = new TouchSensor(cmd.port, cmd.portName);break;
+							default: new ErrorMode(ErrorType.SYSTEM_ERROR, "main loop sensors");break;
 						}
 					}
 				} else if (cmd.cmd == CmdType.CLOSE) {

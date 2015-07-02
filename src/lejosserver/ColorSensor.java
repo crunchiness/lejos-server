@@ -13,10 +13,10 @@ public class ColorSensor extends Sensor {
 		super(portName);
 		try {
 			colorSensor = new EV3ColorSensor(port);
+			setMode(Mode.RGB, "rgb");
 		} catch (IllegalArgumentException e) {
 			new ErrorMode(ErrorType.NOT_CONNECTED_SENSOR, portName);
 		}
-		setMode(Mode.RGB, "rgb");
 	}
 
 	@Override

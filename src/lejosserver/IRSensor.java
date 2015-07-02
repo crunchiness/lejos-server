@@ -13,10 +13,10 @@ public class IRSensor extends Sensor {
 		super(portName);
 		try {
 			this.irSensor = new EV3IRSensor(port);
+			setMode(Mode.DISTANCE, "distance");
 		} catch (IllegalArgumentException e) {
 			new ErrorMode(ErrorType.NOT_CONNECTED_SENSOR, portName);
 		}
-		setMode(Mode.DISTANCE, "distance");
 	}
 	
 	@Override

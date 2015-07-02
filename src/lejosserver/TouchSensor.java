@@ -13,10 +13,10 @@ public class TouchSensor extends Sensor {
 		super(portName);
 		try {
 			touchSensor = new EV3TouchSensor(port);
+			setMode(Mode.TOUCH, "touch");
 		} catch (IllegalArgumentException e) {
 			new ErrorMode(ErrorType.NOT_CONNECTED_SENSOR, portName);
 		}
-		setMode(Mode.TOUCH, "touch");
 	}
 
 	@Override
@@ -30,6 +30,7 @@ public class TouchSensor extends Sensor {
 			}
 			default: {
 				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
+				break;
 			}
 		}
 	}

@@ -21,8 +21,9 @@ public class LocalServer {
 	
 	private static Camera camera;
 	
+	public static boolean terminate = false; 
+	
 	public static void main(String argv[]) throws Exception {
-		boolean terminate = false;
 		String clientSentence;
 		ServerSocket socket = new ServerSocket(6789);
 		LCD.drawString("READY", 0, 4);

@@ -56,7 +56,14 @@ public class ErrorMode {
 		LCD.clear();
 		int strLen = err.length();
 		for (int i = 0; i*CHARS_PER_LINE < strLen; i++) {
-			String subStr = err.substring(i*CHARS_PER_LINE);
+			int from = i*CHARS_PER_LINE;
+			int to = i*CHARS_PER_LINE + CHARS_PER_LINE;
+			String subStr;
+			try {
+				subStr = err.substring(from, to);
+			} catch (StringIndexOutOfBoundsException e) {
+				subStr = err.substring(from);
+			}
 			LCD.drawString(subStr, 0, i*LINE_HEIGHT);
 		}
 	}

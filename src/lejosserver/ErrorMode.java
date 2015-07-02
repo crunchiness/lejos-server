@@ -19,7 +19,7 @@ public class ErrorMode {
 	private int LINE_HEIGHT = 1;
 	
 	public enum ErrorType {
-		UNKNOWN_DEV, UNKNOWN_PORT, UNKNOWN_COMMAND, UNKNOWN_SENSOR, UNKNOWN_MOTOR, UNKNOWN_SENSOR_MODE, MISSING_CMD_VALUE, SYSTEM_ERROR, NOT_INIT_CAM, NOT_INIT_MOTOR, NOT_INIT_SENSOR, NOT_CONNECTED_CAM
+		UNKNOWN_DEV, UNKNOWN_PORT, UNKNOWN_COMMAND, UNKNOWN_SENSOR, UNKNOWN_MOTOR, UNKNOWN_SENSOR_MODE, MISSING_CMD_VALUE, SYSTEM_ERROR, NOT_INIT_CAM, NOT_INIT_MOTOR, NOT_INIT_SENSOR, NOT_CONNECTED_CAM, NOT_CONNECTED_MOTOR, NOT_CONNECTED_SENSOR
 	}
 
 	private static final Map<ErrorType, String> errorStringMap;
@@ -36,6 +36,8 @@ public class ErrorMode {
 		map.put(ErrorType.NOT_INIT_MOTOR, "Cmd '%s'. Motor not init.");
 		map.put(ErrorType.NOT_INIT_SENSOR, "Cmd '%s'. Sensor not init.");
 		map.put(ErrorType.NOT_CONNECTED_CAM, "Camera not connected?");
+		map.put(ErrorType.NOT_CONNECTED_MOTOR, "Motor not connected to port '%s'?");
+		map.put(ErrorType.NOT_CONNECTED_SENSOR, "Sensor not connected to port '%s'?");
 		// User should never see this:
 		map.put(ErrorType.SYSTEM_ERROR, "System error in '%s'.");
 		errorStringMap = Collections.unmodifiableMap(map);

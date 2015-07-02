@@ -11,7 +11,11 @@ public class TouchSensor extends Sensor {
 
 	public TouchSensor(Port port, String portName) {
 		super(portName);
-		touchSensor = new EV3TouchSensor(port);
+		try {
+			touchSensor = new EV3TouchSensor(port);
+		} catch (IllegalArgumentException e) {
+			new ErrorMode(ErrorType.NOT_CONNECTED_SENSOR, portName);
+		}
 		setMode(Mode.TOUCH, "touch");
 	}
 

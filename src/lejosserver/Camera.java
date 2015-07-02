@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import lejos.hardware.BrickFinder;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.video.Video;
+import lejosserver.ErrorMode.ErrorType;
 
 public class Camera {
 
@@ -19,18 +20,22 @@ public class Camera {
 	private int NUM_PIXELS;
 	private int FRAME_SIZE;
 	private Video camera;
-	public Camera() throws IOException {
+	public Camera() {
 		this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 
-	public Camera(int width, int height) throws IOException {
+	public Camera(int width, int height) {
 		WIDTH = width;
 		HEIGHT = height;
 		NUM_PIXELS = width * height;
 		FRAME_SIZE = NUM_PIXELS * 2;
 		
 		camera = BrickFinder.getDefault().getVideo();
-		camera.open(WIDTH, HEIGHT);
+		try {
+			camera.open(WIDTH, HEIGHT);
+		} catch (IOException e) {
+			new ErrorMode(ErrorType.NOT_CONNECTED_CAM);
+		}
 		getResolution();
 	}
 

@@ -25,12 +25,16 @@ public class Motor {
 
 	public Motor(Port port, String portName, MotorType motorType) {
 		this.portName = portName;
-		switch(motorType) {
-			case MEDIUM: this.m = new EV3MediumRegulatedMotor(port);break;
-			case LARGE: this.m = new EV3LargeRegulatedMotor(port);break;
-			default: {
-				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
+		try {
+			switch(motorType) {
+				case MEDIUM: this.m = new EV3MediumRegulatedMotor(port);break;
+				case LARGE: this.m = new EV3LargeRegulatedMotor(port);break;
+				default: {
+					new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
+				}
 			}
+		} catch (IllegalArgumentException e) {
+			new ErrorMode(ErrorType.NOT_CONNECTED_MOTOR, portName);
 		}
 	}
 	

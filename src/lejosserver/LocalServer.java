@@ -108,15 +108,10 @@ public class LocalServer {
 				if (cmd.cmd == CmdType.INIT) {
 					// if initialised already, ignore this command
 					if (camera == null) {
-						try {
-							if (cmd.camWidth > 0 && cmd.camHeight > 0) {
-								camera = new Camera(cmd.camWidth, cmd.camHeight);
-							} else {
-								camera = new Camera();
-							}
-						} catch (IOException e) {
-							new ErrorMode(ErrorType.NOT_CONNECTED_CAM);
-							// TODO check if connected sensors/motors
+						if (cmd.camWidth > 0 && cmd.camHeight > 0) {
+							camera = new Camera(cmd.camWidth, cmd.camHeight);
+						} else {
+							camera = new Camera();
 						}
 					}
 				} else if (cmd.cmd == CmdType.CLOSE) {

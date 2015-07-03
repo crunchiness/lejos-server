@@ -56,6 +56,7 @@ public class Command {
 	public int camHeight = Integer.MIN_VALUE;
 	public int speed = Integer.MIN_VALUE;
 	public int rotateDeg = Integer.MIN_VALUE;
+	public boolean isAsync;
 	
 	/**
 	 * Parses JSON object into Command.
@@ -83,12 +84,22 @@ public class Command {
 		}
 		if (cmd == CmdType.ROTATE) {
 			parseRotateDeg(command);
+			parseIsAsync(command);
 		}
 		if (cmd == CmdType.SETSPEED) {
 			parseSpeed(command);
 		}
 	}
 	
+	private void parseIsAsync(JSONObject command) {
+		Boolean isAsync = (Boolean) command.get("is_async");
+		if (isAsync != null) {
+			this.isAsync = (boolean) isAsync;
+		} else {
+			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "is_async");
+		}
+	}
+
 	private void parseDev(JSONObject command) {
 		devName = (String) command.get("dev");
 		if (devName.equals(new String("motor"))) { dev = DevType.MOTOR; }

@@ -48,20 +48,45 @@ public class Motor {
 	public void executeCmd(Command cmd, PrintWriter pw) throws IOException {
 		// closing has to be done from the outside (want to null this instance)
 		switch(cmd.cmd) {
-			case FORWARD: actionQueue.add(cmd);break;	
-			case BACKWARD: actionQueue.add(cmd);break;
+			case FORWARD: this.m.forward();break;
+			case BACKWARD: this.m.backward();break;
+			case ROTATE: {
+				if (cmd.isAsync) {
+					try {
+						actionQueue.add(cmd);
+					} catch (IllegalStateException e) {
+						new ErrorMode(ErrorType.FULLQUEUE, portName);
+					}
+				} else {
+					rotate(cmd.rotateDeg);
+					rotateFinished(pw);
+				}
+				break;
+			}
 			case GETSPEED: getSpeed(pw);break;
 			case SETSPEED: setSpeed(cmd.speed);break;
 			case STOP: this.m.stop();break;
 			case GETTACHO: getTacho(pw);break;
 			case RESETTACHO: this.m.resetTachoCount();break;
-			case ROTATE: rotate(cmd.rotateDeg);break;
 			default: {
-				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
+				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());break;
 			}
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void rotateFinished(PrintWriter pw) throws IOException {
+		JSONObject outputObj = new JSONObject();
+		outputObj.put("rotate_finished", true);
+		outputObj.put("dev", "motor");
+		outputObj.put("port", portName);
+		StringWriter out = new StringWriter();
+		outputObj.writeJSONString(out);
+		String jsonOutput = out.toString();
+		pw.println(LocalServer.padString(jsonOutput));
+		pw.flush();
+	}
+
 	public void rotate(int angle) {
 		if (angle != Integer.MIN_VALUE) {
 			this.m.rotate(angle);
@@ -72,8 +97,7 @@ public class Motor {
 	
 	public void executeAsyncCmd(Command cmd) {
 		switch(cmd.cmd) {
-			case FORWARD: this.m.forward();break;
-			case BACKWARD: this.m.backward();break;
+			case ROTATE: rotate(cmd.rotateDeg);break;
 			default: LCD.drawString("Unsupported motor cmd:" + cmd, 0, 4);
 		}
 	}

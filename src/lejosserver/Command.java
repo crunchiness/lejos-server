@@ -92,9 +92,9 @@ public class Command {
 	}
 	
 	private void parseIsAsync(JSONObject command) {
-		Boolean isAsync = (Boolean) command.get("is_async");
+		Long isAsync = (Long) command.get("is_async");
 		if (isAsync != null) {
-			this.isAsync = (boolean) isAsync;
+			this.isAsync = isAsync > 0;
 		} else {
 			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "is_async");
 		}

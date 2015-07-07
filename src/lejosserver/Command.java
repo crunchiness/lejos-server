@@ -30,7 +30,7 @@ public class Command {
 	}
 
 	public enum Mode {
-		RGB, RED, AMBIENT, DISTANCE, TOUCH
+		RGB, RED, AMBIENT, DISTANCE, TOUCH, COLORID
 	}
 	
 	public DevType dev;
@@ -196,6 +196,7 @@ public class Command {
 		else if (modeName.equals(new String("ambient"))) { sensorMode = Mode.AMBIENT; }
 		else if (modeName.equals(new String("distance"))) { sensorMode = Mode.DISTANCE; }
 		else if (modeName.equals(new String("touch"))) { sensorMode = Mode.TOUCH; }
+		else if (modeName.equals(new String("colorid"))) { sensorMode = Mode.COLORID; }
 		else {
 			new ErrorMode(ErrorType.UNKNOWN_SENSOR_MODE, modeName);
 		}

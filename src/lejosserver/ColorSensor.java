@@ -40,11 +40,17 @@ public class ColorSensor extends Sensor {
 				// Measures the ambient light level
 				this.mode = colorSensor.getAmbientMode();
 				this.numberOfValues = 1;
-				this.modeName = "ambient";
+				this.modeName = modeName;
 				break;
 			}
+			case COLORID: {
+				// Measures color id (NONE, BLACK, BLUE, GREEN, YELLOW, RED, WHITE, BROWN).
+				// The sample contains one element containing the ID (0-7) of the detected color.
+				this.mode = colorSensor.getColorIDMode();
+				this.numberOfValues = 1;
+				this.modeName = modeName;
+			}
 			default: {
-				// TODO Color ID Measures the color ID of a surface getColorIDMode()
 				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
 			}
 		}

@@ -19,7 +19,7 @@ public class ErrorMode {
 	private int LINE_HEIGHT = 1;
 	
 	public enum ErrorType {
-		UNKNOWN_DEV, UNKNOWN_PORT, UNKNOWN_COMMAND, UNKNOWN_SENSOR, UNKNOWN_MOTOR, UNKNOWN_SENSOR_MODE, MISSING_CMD_VALUE, SYSTEM_ERROR, NOT_INIT_CAM, NOT_INIT_MOTOR, NOT_INIT_SENSOR, NOT_CONNECTED_CAM, NOT_CONNECTED_MOTOR, NOT_CONNECTED_SENSOR, FULLQUEUE
+		UNKNOWN_DEV, UNKNOWN_PORT, UNKNOWN_COMMAND, UNKNOWN_SENSOR, UNKNOWN_MOTOR, UNKNOWN_SENSOR_MODE, MISSING_CMD_VALUE, SYSTEM_ERROR, NOT_INIT_CAM, NOT_INIT_MOTOR, NOT_INIT_SENSOR, NOT_CONNECTED_CAM, NOT_CONNECTED_MOTOR, NOT_CONNECTED_SENSOR, FULLQUEUE, EXPECTED_INT
 	}
 
 	private static final Map<ErrorType, String> errorStringMap;
@@ -40,6 +40,7 @@ public class ErrorMode {
 		map.put(ErrorType.NOT_CONNECTED_MOTOR, "No motor / unexpected device at port '%s'.");
 		map.put(ErrorType.NOT_CONNECTED_SENSOR, "No sensor / unexpected device at port '%s'.");
 		map.put(ErrorType.FULLQUEUE, "Repeated 'rotate' received. Motor at port '%s'.");
+		map.put(ErrorType.EXPECTED_INT, "Expected integer value for '%s'.");
 		// User should never see this:
 		map.put(ErrorType.SYSTEM_ERROR, "System error in '%s'.");
 		errorStringMap = Collections.unmodifiableMap(map);

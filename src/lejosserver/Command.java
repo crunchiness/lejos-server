@@ -92,11 +92,15 @@ public class Command {
 	}
 	
 	private void parseIsAsync(JSONObject command) {
-		Long isAsync = (Long) command.get("is_async");
-		if (isAsync != null) {
-			this.isAsync = isAsync > 0;
-		} else {
-			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "is_async");
+		try {
+			Long isAsync = (Long) command.get("is_async");
+			if (isAsync != null) {
+				this.isAsync = isAsync > 0;
+			} else {
+				new ErrorMode(ErrorType.MISSING_CMD_VALUE, "is_async");
+			}
+		} catch (ClassCastException e) {
+			new ErrorMode(ErrorType.EXPECTED_INT, "is_async");
 		}
 	}
 
@@ -198,38 +202,54 @@ public class Command {
 	}
 	
 	private void parseCamWidth(JSONObject command) {
-		Long widthObj = (Long) command.get("cam_width");
-		if (widthObj != null) {
-			camWidth = (int) (long) widthObj;
-		} else {
-			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "cam_width");
+		try {
+			Long widthObj = (Long) command.get("cam_width");
+			if (widthObj != null) {
+				camWidth = (int) (long) widthObj;
+			} else {
+				new ErrorMode(ErrorType.MISSING_CMD_VALUE, "cam_width");
+			}
+		} catch (ClassCastException e) {
+			new ErrorMode(ErrorType.EXPECTED_INT, "cam_width");
 		}
 	}
 	
 	private void parseCamHeight(JSONObject command) {
-		Long heightObj = (Long) command.get("cam_height");
-		if (heightObj != null) {
-			camHeight = (int) (long) heightObj;
-		} else {
-			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "cam_height");
+		try {
+			Long heightObj = (Long) command.get("cam_height");
+			if (heightObj != null) {
+				camHeight = (int) (long) heightObj;
+			} else {
+				new ErrorMode(ErrorType.MISSING_CMD_VALUE, "cam_height");
+			}
+		} catch (ClassCastException e) {
+			new ErrorMode(ErrorType.EXPECTED_INT, "cam_height");
 		}
 	}
 	
 	private void parseSpeed(JSONObject command) {
-		Long speedObj = (Long) command.get("speed");
-		if (speedObj != null) {
-			speed = (int) (long) speedObj;
-		} else {
-			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "speed");
+		try {
+			Long speedObj = (Long) command.get("speed");
+			if (speedObj != null) {
+				speed = (int) (long) speedObj;
+			} else {
+				new ErrorMode(ErrorType.MISSING_CMD_VALUE, "speed");
+			}			
+		} catch (ClassCastException e) {
+			new ErrorMode(ErrorType.EXPECTED_INT, "speed");
 		}
 	}
 	
 	private void parseRotateDeg(JSONObject command) {
-		Long rotateDegObj = (Long) command.get("rotate_deg");
-		if (rotateDegObj != null) {
-			rotateDeg  = (int) (long) rotateDegObj;
-		} else {
-			new ErrorMode(ErrorType.MISSING_CMD_VALUE, "rotate_deg");
+		try {
+			Long rotateDegObj = (Long) command.get("rotate_deg");
+			if (rotateDegObj != null) {
+				rotateDeg  = (int) (long) rotateDegObj;
+			} else {
+				new ErrorMode(ErrorType.MISSING_CMD_VALUE, "rotate_deg");
+			}
+		} catch (ClassCastException e) {
+			new ErrorMode(ErrorType.EXPECTED_INT, "rotate_deg");
 		}
 	}
 }

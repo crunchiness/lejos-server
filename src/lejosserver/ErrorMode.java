@@ -6,7 +6,6 @@ import java.util.Map;
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
-import lejos.hardware.lcd.LCD;
 
 /**
  * @author Ingvaras Merkys Purpose of this class is to provide a useful error
@@ -14,9 +13,6 @@ import lejos.hardware.lcd.LCD;
  *         clicking the button.
  */
 public class ErrorMode {
-
-	private int CHARS_PER_LINE = 17;
-	private int LINE_HEIGHT = 1;
 	
 	public enum ErrorType {
 		UNKNOWN_DEV, UNKNOWN_PORT, UNKNOWN_COMMAND, UNKNOWN_SENSOR, UNKNOWN_MOTOR, UNKNOWN_SENSOR_MODE, MISSING_CMD_VALUE, SYSTEM_ERROR, NOT_INIT_CAM, NOT_INIT_MOTOR, NOT_INIT_SENSOR, NOT_CONNECTED_CAM, NOT_CONNECTED_MOTOR, NOT_CONNECTED_SENSOR, FULLQUEUE, EXPECTED_INT
@@ -53,25 +49,10 @@ public class ErrorMode {
 	public ErrorMode(ErrorType err, String param) {
 		String errStr = "Error:" + String.format(errorStringMap.get(err), param);
 		Sound.buzz();
-		drawError(errStr);
+		Util.drawString(errStr);
 		buttonListener();
 	}
 
-	public void drawError(String err) {
-		LCD.clear();
-		int strLen = err.length();
-		for (int i = 0; i*CHARS_PER_LINE < strLen; i++) {
-			int from = i*CHARS_PER_LINE;
-			int to = i*CHARS_PER_LINE + CHARS_PER_LINE;
-			String subStr;
-			try {
-				subStr = err.substring(from, to);
-			} catch (StringIndexOutOfBoundsException e) {
-				subStr = err.substring(from);
-			}
-			LCD.drawString(subStr, 0, i*LINE_HEIGHT);
-		}
-	}
 	public void buttonListener() {
 		Button.ESCAPE.waitForPressAndRelease();
 		LocalServer.terminate = true;

@@ -61,7 +61,7 @@ public class LocalServer {
 					connectionSocket.getOutputStream());
 			PrintWriter pw = new PrintWriter(outStream);
 			
-			LCD.drawString(clientSentence, 0, 4);
+			Util.drawString(clientSentence);
 			
 			JSONObject inputObj = (JSONObject) JSONValue.parse(clientSentence);
 			JSONObject contents;

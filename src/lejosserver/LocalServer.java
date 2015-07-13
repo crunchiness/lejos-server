@@ -3,6 +3,7 @@ package lejosserver;
 import java.io.*;
 import java.net.*;
 
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 import lejosserver.Command.CmdType;
@@ -21,14 +22,38 @@ public class LocalServer {
 	
 	private static Camera camera;
 	
-	public static boolean terminate = false; 
+	private static ServerSocket socket;
+	
+	public static boolean terminate = false;
+	
+	private static ExitButtonThread exitThread;
+	
+	private static class ExitButtonThread extends Thread {
+		@Override
+		public void run() {
+			Button.ESCAPE.waitForPressAndRelease();
+			try {
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			terminate = true;
+		}
+	}
 	
 	public static void main(String argv[]) throws Exception {
 		String clientSentence;
-		ServerSocket socket = new ServerSocket(6789);
+		Socket connectionSocket;
+		socket = new ServerSocket(6789);
+		initExitThread();
 		LCD.drawString("READY", 0, 4);
 		while (!terminate) {
-			Socket connectionSocket = socket.accept();
+			try {
+				connectionSocket = socket.accept();	
+			} catch (SocketException e) {
+				// Shutting down everything via ESCAPE button
+				break;
+			}
 			BufferedReader inReader = new BufferedReader(
 					new InputStreamReader(connectionSocket.getInputStream()));
 			clientSentence = inReader.readLine();
@@ -136,6 +161,12 @@ public class LocalServer {
 		socket.close();
 	}
 
+	public static void initExitThread() {
+		exitThread = new ExitButtonThread();
+		exitThread.setDaemon(true);
+		exitThread.start();
+	}
+	
 	public static String padString(String str) {
 		// pads string with spaces to length 100
 		String length = "100";

@@ -49,6 +49,7 @@ public class ColorSensor extends Sensor {
 				this.mode = colorSensor.getColorIDMode();
 				this.numberOfValues = 1;
 				this.modeName = modeName;
+				break;
 			}
 			default: {
 				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());

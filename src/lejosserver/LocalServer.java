@@ -1,33 +1,43 @@
 package lejosserver;
 
-import java.io.*;
-import java.net.*;
-
-import lejos.hardware.Button;
-import lejos.hardware.Sound;
-import lejos.hardware.lcd.LCD;
-import lejosserver.Command.CmdType;
-import lejosserver.Command.DevType;
-import lejosserver.ErrorMode.ErrorType;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import lejos.hardware.Button;
+import lejos.hardware.Sound;
+import lejos.hardware.lcd.LCD;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.MotorPort;
+import lejos.robotics.RegulatedMotor;
+import lejosserver.Command.CmdType;
+import lejosserver.Command.DevType;
+import lejosserver.ErrorMode.ErrorType;
+
 public class LocalServer {
-	
+
 	// Motor ports: A, B, C, D
 	private static Motor[] motors = {null, null, null, null};
 	// Sensor ports: S1, S2, S3, S4
 	private static Sensor[] sensors = {null, null, null, null};
-	
+
 	private static Camera camera;
-	
+
 	private static ServerSocket socket;
-	
+
 	public static boolean terminate = false;
-	
+
 	private static ExitButtonThread exitThread;
-	
+
 	private static class ExitButtonThread extends Thread {
 		@Override
 		public void run() {
@@ -40,7 +50,9 @@ public class LocalServer {
 			terminate = true;
 		}
 	}
-	
+
+	private static RegulatedMotor mB = null, mC = null;
+
 	public static void main(String argv[]) throws Exception {
 		String clientSentence;
 		Socket connectionSocket;
@@ -49,7 +61,7 @@ public class LocalServer {
 		LCD.drawString("READY", 0, 4);
 		while (!terminate) {
 			try {
-				connectionSocket = socket.accept();	
+				connectionSocket = socket.accept();
 			} catch (SocketException e) {
 				// Shutting down everything via ESCAPE button
 				break;
@@ -57,12 +69,12 @@ public class LocalServer {
 			BufferedReader inReader = new BufferedReader(
 					new InputStreamReader(connectionSocket.getInputStream()));
 			clientSentence = inReader.readLine();
-			DataOutputStream outStream = new DataOutputStream(
-					connectionSocket.getOutputStream());
+			DataOutputStream outStream = new DataOutputStream(connectionSocket.getOutputStream());
 			PrintWriter pw = new PrintWriter(outStream);
-			
+			//PrintWriter pw = new PrintWriter(connectionSocket.getOutputStream(), true);
+
 			Util.drawString(clientSentence);
-			
+
 			JSONObject inputObj = (JSONObject) JSONValue.parse(clientSentence);
 			JSONObject contents;
 			try {
@@ -72,13 +84,15 @@ public class LocalServer {
 				break;
 			}
 			Command cmd = new Command(contents);
-			
+
 			// Brick commands
 			if (cmd.dev == DevType.BRICK) {
 				switch(cmd.cmd) {
 					case BEEP: Sound.beep();break;
 					case BUZZ: Sound.buzz();break;
 					case EXIT: terminate = true;break;
+					case LED: Button.LEDPattern(cmd.intParam1);break;
+					case PLAYWAV: PlayWAV(cmd.strParam1, cmd.intParam1);break;
 					default: LCD.drawString("Unknown cmd: " + cmd.cmdName, 0, 4);
 				}
 
@@ -102,7 +116,6 @@ public class LocalServer {
 				} else {
 					new ErrorMode(ErrorType.NOT_INIT_MOTOR, cmd.cmdName);
 				}
-
 			// Sensor commands
 			} else if (cmd.dev == DevType.SENSOR) {
 				int i = cmd.portIndex;
@@ -124,10 +137,10 @@ public class LocalServer {
 					}
 				} else if (sensors[i] != null) {
 					sensors[i].executeCmd(cmd, pw);
-				} else {					
+				} else {
 					new ErrorMode(ErrorType.NOT_INIT_SENSOR, cmd.cmdName);
 				}
-				
+
 			// Camera commands
 			} else if (cmd.dev == DevType.CAMERA) {
 				if (cmd.cmd == CmdType.INIT) {
@@ -152,7 +165,35 @@ public class LocalServer {
 				} else {
 					new ErrorMode(ErrorType.NOT_INIT_CAM, cmd.cmdName);
 				}
-
+			} else if  (cmd.dev == DevType.WHEELS) {
+				if (mB == null) mB = new EV3LargeRegulatedMotor(MotorPort.B);
+				if (mC == null) mC = new EV3LargeRegulatedMotor(MotorPort.C);
+				if (cmd.cmd == CmdType.ISMOVING) {
+					isMoving(pw, new Boolean(mB.isMoving()));
+				}
+				else {
+					mB.setSpeed(cmd.speed);
+					mC.setSpeed(cmd.speed);
+					mB.synchronizeWith(new RegulatedMotor[] {mC});
+					mB.startSynchronization();
+					if (cmd.cmd == CmdType.GO_FORWARD) {
+						mB.rotate(cmd.rotateDeg, true);
+						mC.rotate(cmd.rotateDeg, true);
+					} else if (cmd.cmd == CmdType.GO_BACKWARD) {
+						mB.rotate(-cmd.rotateDeg, true);
+						mC.rotate(-cmd.rotateDeg, true);
+					} else if (cmd.cmd == CmdType.TURN_LEFT) {
+						mB.rotate(-cmd.rotateDeg, true);
+						mC.rotate(cmd.rotateDeg, true);
+					} else if (cmd.cmd == CmdType.TURN_RIGHT) {
+						mB.rotate(cmd.rotateDeg, true);
+						mC.rotate(-cmd.rotateDeg, true);
+					} else if (cmd.cmd == CmdType.STOP) {
+						mB.stop();
+						mC.stop();
+					}
+					mB.endSynchronization();
+				}
 			// Unsupported device
 			} else {
 				new ErrorMode(ErrorType.SYSTEM_ERROR, "main loop sensors");
@@ -166,10 +207,51 @@ public class LocalServer {
 		exitThread.setDaemon(true);
 		exitThread.start();
 	}
-	
+
 	public static String padString(String str) {
 		// pads string with spaces to length 100
 		String length = "100";
 		return String.format("%1$-" + length + "s", str);
 	}
+
+	@SuppressWarnings("unchecked")
+	private static void isMoving(PrintWriter pw, Boolean isMoving) throws IOException {
+		JSONObject outputObj = new JSONObject();
+		outputObj.put("ismoving", isMoving);
+		outputObj.put("dev", "wheelB");
+		StringWriter out = new StringWriter();
+		outputObj.writeJSONString(out);
+		String jsonOutput = out.toString();
+		pw.println(LocalServer.padString(jsonOutput));
+		pw.flush();
+	}
+
+	static WAVThread _wt = null;
+	private static void PlayWAV(String fileName, int vol) {
+		java.io.File wavFile = new java.io.File(fileName);
+		if (wavFile.exists() && _wt == null) {
+			//Sound.playSample(wavFile, vol);
+			//WAVThread wt = new WAVThread(wavFile, vol);
+			_wt = new WAVThread(wavFile, vol);
+			_wt.start();
+		}
+		else {
+			Util.drawString("File not found: " + fileName);
+		}
+	}
+
+}
+
+class WAVThread extends Thread {
+	private java.io.File _file;
+	private int _vol;
+	public WAVThread(java.io.File wavFile, int vol)
+	{
+		_file = wavFile;
+		_vol = vol;
+	}
+
+    public void run() {
+    	Sound.playSample(_file, _vol);
+    }
 }

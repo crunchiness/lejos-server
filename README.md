@@ -1,8 +1,21 @@
 # lejos-server
 TCP server program on EV3, JSON communication
 
+
+## Notes
+
 WARNING: THIS PROGRAM IS STILL IN DEVELOPMENT
 
+This project is not actively maintained, but I might be able to merge pull requests.
+Conceived in the University of Edinburgh.
+
+Originally made to be used with MATLAB client:
+https://github.com/crunchiness/matlab-puppeteer
+
+More (UoE specific) notes on setting up can be found here:
+https://github.com/crunchiness/Lego-guide
+
+## Usage
 
 Default sensor modes:
 RGB mode for color sensor

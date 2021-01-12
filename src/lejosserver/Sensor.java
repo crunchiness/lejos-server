@@ -23,20 +23,20 @@ public abstract class Sensor {
 		this.portName = portName;
 		this.numberOfValues = 1; // how many values fetchSample returns depends on sensor mode
 	}
-	
+
 	abstract public void setMode(Mode sensorMode, String modeName);
 	abstract public void close();
-	
+
 
 	@SuppressWarnings("unchecked")
 	public void getValue(PrintWriter pw) throws IOException {
-		
+
 		float[] sample = new float[this.numberOfValues];
 		mode.fetchSample(sample, 0);
-		
+
 		JSONArray valueList = new JSONArray();
 		valueList.addAll(toList(sample));
-		
+
 		// Put values into JSON
 		JSONObject outputObj = new JSONObject();
 		outputObj.put("value", valueList);
@@ -46,12 +46,13 @@ public abstract class Sensor {
 		StringWriter out = new StringWriter();
 		outputObj.writeJSONString(out);
 		String jsonOutput = out.toString();
-		
+		Util.drawString(jsonOutput);
+
 		// Pad since MATLAB is expecting 100 byte reply
 		pw.println(LocalServer.padString(jsonOutput));
 		pw.flush();
 	}
-	
+
 	private static List<Float> toList(float[] array) {
 		int size = array.length;
 		List<Float> list = new ArrayList<Float>(size);
@@ -63,7 +64,7 @@ public abstract class Sensor {
 
 	@SuppressWarnings("unchecked")
 	public void getMode(PrintWriter pw) throws IOException {
-		
+
 		// Put values into JSON
 		JSONObject outputObj = new JSONObject();
 		outputObj.put("dev", "sensor");
@@ -72,7 +73,7 @@ public abstract class Sensor {
 		StringWriter out = new StringWriter();
 		outputObj.writeJSONString(out);
 		String jsonOutput = out.toString();
-		
+
 		// Pad since MATLAB is expecting 100 byte reply
 		pw.println(LocalServer.padString(jsonOutput));
 		pw.flush();

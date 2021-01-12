@@ -37,14 +37,14 @@ public class Motor {
 			new ErrorMode(ErrorType.NOT_CONNECTED_MOTOR, portName);
 		}
 	}
-	
+
 	public void init() {
 		motorThread = new MotorThread();
 		motorThread.setDaemon(true);
 		running = true;
 		motorThread.start();
 	}
-	
+
 	public void executeCmd(Command cmd, PrintWriter pw) throws IOException {
 		// closing has to be done from the outside (want to null this instance)
 		switch(cmd.cmd) {
@@ -68,12 +68,13 @@ public class Motor {
 			case STOP: this.m.stop();break;
 			case GETTACHO: getTacho(pw);break;
 			case RESETTACHO: this.m.resetTachoCount();break;
+			case ISMOVING: isMoving(pw);break;
 			default: {
 				new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());break;
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void rotateFinished(PrintWriter pw) throws IOException {
 		JSONObject outputObj = new JSONObject();
@@ -94,14 +95,14 @@ public class Motor {
 			new ErrorMode(ErrorType.SYSTEM_ERROR, this.getClass().getName());
 		}
 	}
-	
+
 	public void executeAsyncCmd(Command cmd) {
 		switch(cmd.cmd) {
 			case ROTATE: rotate(cmd.rotateDeg);break;
 			default: LCD.drawString("Unsupported motor cmd:" + cmd, 0, 4);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void getSpeed(PrintWriter pw) throws IOException {
 		int speed = this.m.getSpeed();
@@ -115,7 +116,7 @@ public class Motor {
 		pw.println(LocalServer.padString(jsonOutput));
 		pw.flush();
 	}
-	
+
 	public void setSpeed(int speed) {
 		if (speed > 0) {
 			this.m.setSpeed(speed);
@@ -137,7 +138,7 @@ public class Motor {
 		pw.println(LocalServer.padString(jsonOutput));
 		pw.flush();
 	}
-	
+
 	private class MotorThread extends Thread {
 		@Override
 		public void run() {
@@ -156,6 +157,29 @@ public class Motor {
 	public void close() {
 		running = false;
 		m.close();
+	}
+
+	public void foward() {
+		m.forward();
+	}
+	public void backward() {
+		m.backward();
+	}
+	public void stop() {
+		m.stop();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void isMoving(PrintWriter pw) throws IOException {
+		JSONObject outputObj = new JSONObject();
+		outputObj.put("ismoving", new Boolean(m.isMoving()));
+		outputObj.put("dev", "motor");
+		outputObj.put("port", portName);
+		StringWriter out = new StringWriter();
+		outputObj.writeJSONString(out);
+		String jsonOutput = out.toString();
+		pw.println(LocalServer.padString(jsonOutput));
+		pw.flush();
 	}
 
 }
